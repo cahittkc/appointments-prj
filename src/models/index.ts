@@ -13,6 +13,7 @@ export interface Appointment {
     agent_id: string[];
     agent_name: string[];
     agent_surname: string[];
+    is_cancelled : boolean;
   };
 }
 
