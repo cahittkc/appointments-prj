@@ -1,5 +1,36 @@
 <template>
   <div v-if="isLoading" class="w-full h-full">
+    <div class="flex items-center justify-between pb-8 border-b-2 border-b-gray-300">
+       <div class="flex items-center gap-x-5">
+          <div class="flex items-center gap-x-2 p-4">
+           <template v-for="i in 5" :key="i">
+             <div class="relative group -ml-3 first:ml-0">
+               <div class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center cursor-pointer ring-2 ring-white animate-pulse"></div>
+             </div>
+           </template>
+           <div class="relative group -ml-3">
+             <div class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center cursor-pointer ring-2 ring-white animate-pulse"></div>
+           </div>
+         </div>
+ 
+         <div class="flex items-center gap-x-3">
+           <div class="w-[150px] h-[42px] bg-gray-200 rounded-lg animate-pulse"></div>
+         </div>
+ 
+         <div class="flex items-center gap-x-1.5">
+           <div class="w-[240px] h-[42px] bg-gray-200 rounded-lg animate-pulse"></div>
+           <div class="w-[240px] h-[42px] bg-gray-200 rounded-lg animate-pulse"></div>
+         </div>
+ 
+         <div>
+           <div class="w-[80px] h-[42px] bg-gray-200 rounded-lg animate-pulse"></div>
+         </div>
+       </div>
+       <div class="flex items-center group w-[300px]">
+          <div class="w-full pl-10 pr-4 py-2.5 h-[42px] bg-gray-200 rounded-tl-lg rounded-bl-lg animate-pulse"></div>
+          <div class="px-3 py-2.5 bg-gray-200 h-[42px] flex items-center justify-center rounded-tr-lg rounded-br-lg animate-pulse w-[42px]"></div>
+        </div>
+      </div>
     <div class="grid gap-2">
       <div v-for="i in numberOfPlaceholders" :key="i" class="cursor-pointer border border-gray-200 rounded-lg grid grid-cols-4 max-xl:grid-cols-2 max-md:grid-cols-1 gap-4 shadow-sm hover:shadow py-4 animate-pulse bg-gray-100">
         <div class="py-3 px-4 flex items-center">
@@ -38,7 +69,7 @@ defineProps<{
 const numberOfPlaceholders = ref(5)
 
 const calculatePlaceholders = () => {
-  const containerHeight = window.innerHeight - 100 // Header ve diğer elementler için boşluk bırakıyoruz
+  const containerHeight = window.innerHeight - 200 // Header ve diğer elementler için boşluk bırakıyoruz
   const cardHeight = 120 // Her bir kartın yaklaşık yüksekliği
   numberOfPlaceholders.value = Math.max(3, Math.floor(containerHeight / cardHeight))
 }

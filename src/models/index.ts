@@ -30,3 +30,26 @@ export interface Agent {
     color: string;
   };
 }
+
+
+
+export interface Contact {
+  id: string;
+  createdTime: string;
+  fields: {
+    contact_id: number;
+    contact_name: string;
+    contact_surname: string;
+    contact_email: string;
+    contact_phone: number;
+    appointments: string[];
+  };
+}
+
+export interface CreateAppointmentForm {
+    appointment_date: Date;
+    appointment_address: string;
+    contact_id: string[];
+    agent_id: string[];
+    is_cancelled?: boolean;
+}
