@@ -93,7 +93,7 @@
       <!-- Section appointment list -->
       <div class="w-full overflow-x-auto py-8">
         <div class="grid gap-2">
-            <div v-for="(app,index) in paginatedAppointments" :key="app.id" :class="{'bg-gray-100': index % 2 === 0}" class="cursor-pointer border border-gray-200 rounded-lg grid grid-cols-4 max-xl:grid-cols-2 max-md:grid-cols-1 gap-4 shadow-sm hover:shadow py-4">
+            <div @click="selectAppointment(app)" v-for="(app,index) in paginatedAppointments" :key="app.id" :class="{'bg-gray-100': index % 2 === 0}" class="cursor-pointer border border-gray-200 rounded-lg grid grid-cols-4 max-xl:grid-cols-2 max-md:grid-cols-1 gap-4 shadow-sm hover:shadow py-4">
                 <div class="py-3 px-4 flex items-center">
                     <div class="flex flex-col gap-y-2.5 flex-1 items-start pl-16 max-xl:pl-8">
                         <div class="text-sm font-medium text-gray-900 flex gap-x-2 items-center">
@@ -245,7 +245,7 @@
           </div>
 
           <div class="relative" @click.stop="toggleAgentDropdown">
-              <div class="flex items-center h-[42px] bg-gray-50 border border-gray-200 rounded-sm w-full relative cursor-pointer">
+              <div class="flex items-center h-[42px] bg-gray-50 border border-gray-200 rounded-sm w-full relative cursor-pointer max-w-[448px]">
                 <span class="text-xs text-gray-500 absolute top-[11px] -translate-y-1/2 left-3">Agents</span>
                 <div class="w-full pl-10 pr-8 py-2.5 h-[42px] pt-4 truncate text-xs">
                   {{ createAppointmentForm.agent_id.length ? createAppointmentForm.agent_id.map(id => getAgentName(id)).join(', ') : '' }}
@@ -298,6 +298,138 @@
 
 
 
+  <BaseModal :isOpen="updateModal" @close="closeUpdateModal">
+    <template #title>
+      <div class="flex items-center gap-x-1.5">
+        <CalendarPlus2 class="w-5 h-5" />
+        <span class="text-md font-semibold text-gray-500">Edit the Appointment</span>
+      </div>
+    </template>
+
+    <template #content>
+      <div class="flex flex-col gap-y-2.5">
+              <UserPlus2 v-if="!addContactModalShow" @click="addContactModalShow = true"  class="w-5 h-5 text-gray-500 mb-2 cursor-pointer flex items-center justify-end ml-auto" />
+              <div class="max-h-60 overflow-y-auto flex flex-col gap-y-2.5" >
+                <template v-for="c in selectedAppointment.contact_id">
+                  <div class="flex flex-col gap-y-2 flex-1 items-start border border-gray-300 rounded-lg p-4 relative">
+                      <div class="text-sm font-medium text-gray-900 flex gap-x-2 items-center">
+                          <User class="w-5 h-5 text-gray-500" />
+                          <span>{{ getContactField(c, 'contact_name') }} {{ getContactField(c, 'contact_surname') }}</span>
+                      </div>
+                      <div class="text-sm text-gray-500 flex items-center gap-x-2">
+                          <Mail class="w-5 h-5 text-gray-500" />
+                          <span>{{ getContactField(c, 'contact_email') }}</span>
+                      </div>
+                      <div class="text-sm text-gray-500 flex items-center gap-x-2">
+                          <Phone class="w-5 h-5 text-gray-500" />
+                          <span>{{ getContactField(c, 'contact_phone') }}</span>
+                      </div>
+                      <X @click="removeContactFromUpdate(c)" class="absolute right-2 top-2  text-gray-500 w-4 h-4 cursor-pointer" />
+                  </div>
+                </template>
+              </div>
+              <AddContactModal 
+                :is-open="addContactModalShow" 
+                @close="addContactModalShow = false"
+                :contacts="contacts"
+                :selected-contact-ids="selectedAppointment.contact_id"
+                @select-contact="addContactToUpdate">
+                <template #title>
+                  <div class="flex items-center gap-x-1.5">
+                    <UserPlus2 class="w-5 h-5" />
+                    <span class="text-md font-semibold text-gray-500">Add Contact</span>
+                  </div>
+                </template>
+                <template #body>
+                  <div class="flex flex-col gap-y-6 mt-6">
+                    <div class="relative">
+                      <div class="flex items-center group w-full">
+                        <input v-model="searchContactQuery" type="text" placeholder="Search..." class="w-full pl-10 pr-4 py-2.5 h-[42px] bg-gray-50 border border-gray-200 rounded-tl-lg rounded-bl-lg focus:outline-none" />
+                        <div class="px-3 py-2.5 bg-black h-[42px] flex items-center justify-center border border-gray-200 transition-all rounded-tr-lg rounded-br-lg">
+                          <Search class="text-white w-4 h-4" />
+                        </div>
+                      </div>
+
+                      <!-- Search Results -->
+                      <div v-if="searchContactQuery && availableContacts.length > 0" class="absolute w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-60 overflow-y-auto">
+                        <div v-for="contact in availableContacts" :key="contact.id" @click="addContactToUpdate(contact.id)" class="flex items-center gap-x-2 px-4 py-2 hover:bg-gray-50 cursor-pointer">
+                          <div class="flex flex-col">
+                            <span class="text-sm">{{ contact.fields.contact_name }} {{ contact.fields.contact_surname }}</span>
+                            <span class="text-xs text-gray-500">{{ contact.fields.contact_email }}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </template>
+
+
+
+              </AddContactModal>
+              <div v-if="!addContactModalShow" class="flex items-center h-[42px] bg-gray-50 border border-gray-200 rounded-sm w-full relative">
+                  <input v-model="selectedAppointment.appointment_address" type="text" class="w-full pl-10 pr-8 py-2.5 h-[42px] text-xs outline-0" />
+                  <House class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 w-4 h-4" />
+                  <X @click="selectedAppointment.appointment_address = ''" class="absolute right-2 top-2 text-gray-500 z-10 w-4 h-4 cursor-pointer" />
+              </div>
+
+              <div v-if="!addContactModalShow" class="relative" @click.stop="toggleAgentDropdown">
+                <div class="flex items-center h-[42px] bg-gray-50 border border-gray-200 rounded-sm  relative cursor-pointer max-w-[448px]">
+                  <span class="text-xs text-gray-500 absolute top-[11px] -translate-y-1/2 left-3">Agents</span>
+                  <div class="w-[calc(100%-50px)] pl-10 pr-8 py-2.5 h-[42px] pt-5 text-xs">
+                    <div class="truncate w-full">
+                      {{ selectedAppointment.agent_id.length ? selectedAppointment.agent_id.map(id => getAgentName(id)).join(', ') : '' }}
+                    </div>
+                  </div>
+                  <ChevronDown class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 w-4 h-4" />
+                </div>
+
+                <!-- Dropdown Menu -->
+                <div  v-if="showAgentDropdown && !addContactModalShow" class="absolute w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-40 overflow-y-auto">
+                  <div v-for="agent in agents" :key="agent.id" @click.stop="toggleAgentInUpdate(agent.id)" class="flex items-center gap-x-2 px-4 py-2 hover:bg-gray-50 cursor-pointer">
+                    <div class="w-4 h-4 border rounded flex items-center justify-center" :class="{ 'bg-black border-black': selectedAppointment.agent_id.includes(agent.id) }">
+                      <div v-if="selectedAppointment.agent_id.includes(agent.id)" class="w-2 h-2 bg-white rounded-sm"></div>
+                    </div>
+                    <span class="text-sm">{{ agent.fields.agent_name }} {{ agent.fields.agent_surname }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div v-if="!addContactModalShow" class="modal relative">
+                <VueDatePicker auto-apply :clearable="false" :min-date="new Date()" :min-time="new Date()" format="dd/MM/yyyy HH:mm" v-model="selectedAppointment.appointment_date" class="w-[240px] text-xs before:content-['Appointment_Date'] before:absolute before:top-0.5 before:left-3 before:text-[11px] before:z-10  before:text-gray-500" name="" id="" />
+              </div>
+
+              <div v-if="!addContactModalShow" class="flex items-center h-[42px] bg-gray-50 border border-gray-200 rounded-sm w-full relative">
+                <select v-model="selectedAppointment.is_cancelled" class="w-full pl-4 pr-4 py-2.5 h-[42px] text-xs outline-0 bg-transparent appearance-none cursor-pointer">
+                  <template v-if="moment(selectedAppointment.appointment_date).isAfter(moment())">
+                    <option :value="false">Upcoming</option>
+                    <option :value="true">Cancelled</option>
+                  </template>
+                  <template v-else>
+                    <option :value="false">Completed</option>
+                    <option :value="true">Cancelled</option>
+                  </template>
+                </select>
+                <ChevronDown class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 w-4 h-4" />
+              </div>
+
+
+      </div>
+    </template>
+
+    <template #footer>
+      <div class="flex justify-end gap-x-2">
+        <button @click="closeUpdateModal" class="px-4 py-2 text-sm font-medium bg-black text-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500">Cancel</button>
+        <button @click="updateAppointment" :disabled="updateIsLoading" class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-pink-500 border border-transparent rounded-md shadow-sm hover:bg-pink-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 disabled:opacity-50 disabled:cursor-not-allowed">
+          <Loader2 v-if="updateIsLoading" class="w-4 h-4 mr-2 -ml-1 animate-spin" />
+          Update
+        </button>
+      </div>
+    </template>
+
+  </BaseModal>
+
+
+
 
 
 
@@ -306,11 +438,12 @@
 
 
 <script setup lang="ts">
-import { Agent, Appointment, Contact, CreateAppointmentForm } from '@/models'
+import { Agent, Appointment, Contact, CreateAppointmentForm, editAppointmentForm } from '@/models'
 import { apiService } from '@/service/axiosService'
 import { onMounted, onUnmounted, ref, watch, computed } from 'vue';
-import { User, Mail, Phone, House, Clock, Search, Check, ChevronLeft, ChevronRightIcon, Plus, CirclePlusIcon, CalendarPlus2, ChevronDown, X, Loader2 } from 'lucide-vue-next';
+import { User, Mail, Phone, House, Clock, Search, Check, ChevronLeft, ChevronRightIcon, Plus, CirclePlusIcon, CalendarPlus2, ChevronDown, X, Loader2, UserPlus2 } from 'lucide-vue-next';
 import LoadingOverlay from './components/LoadingOverlay.vue';
+import AddContactModal from './components/AddContactModal.vue';
 import moment from 'moment';
 
 const withOutFilterAppointments = ref<Appointment[]>([])
@@ -324,7 +457,31 @@ const isLoading = ref<boolean>(false)
 const createIsLoading = ref<boolean>(false)
 const createAppointmentModalShow = ref<boolean>(false)
 const searchContactQuery = ref('')
-const showAgentDropdown = ref(false)
+const showAgentDropdown = ref<boolean>(false)
+const addContactModalShow = ref<boolean>(false)
+const updateIsLoading = ref<boolean>(false)
+
+
+
+const availableContacts = computed(() => {
+  const contactIds = Array.isArray(selectedAppointment.value.contact_id) ? selectedAppointment.value.contact_id : [selectedAppointment.value.contact_id]
+  return contacts.value.filter(contact => !contactIds.includes(contact.id))
+})
+
+const addContactToUpdate = (contactId: string) => {
+  selectedAppointment.value.contact_id.push(contactId)
+  addContactModalShow.value = false
+}
+
+const selectedAppointment = ref<editAppointmentForm>({
+  id: '',
+  appointment_date: '',
+  appointment_address: '',
+  contact_id: [],
+  agent_id: [],
+  is_cancelled: false,
+})
+const updateModal = ref<boolean>(false)
 
 const createAppointmentForm = ref<CreateAppointmentForm>({
     appointment_date: new Date(),
@@ -346,8 +503,76 @@ const paginatedAppointments = computed(() => {
 })
 
 
+
+const selectAppointment = (appointment: Appointment) => {
+  const currentStatus = appointmentStatus(appointment.fields.is_cancelled, appointment.fields.appointment_date)
+  selectedAppointment.value = {
+    id: appointment.id,
+    appointment_date: appointment.fields.appointment_date,
+    appointment_address: appointment.fields.appointment_address,
+    contact_id: appointment.fields.contact_id,
+    agent_id: appointment.fields.agent_id,
+    is_cancelled: currentStatus === 'Cancelled',
+    status: currentStatus
+  }
+  updateModal.value = true
+}
+
+const closeUpdateModal = () => {
+  updateModal.value = false
+}
+
+const updateAppointment = async () => {
+  updateIsLoading.value = true
+  try {
+    const records = [
+      {
+        id: selectedAppointment.value.id,
+        fields: {
+          appointment_date: selectedAppointment.value.appointment_date,
+          appointment_address: selectedAppointment.value.appointment_address,
+          contact_id: selectedAppointment.value.contact_id,
+          agent_id: selectedAppointment.value.agent_id,
+          is_cancelled: selectedAppointment.value.is_cancelled,
+        }
+      }
+    ]
+
+    // Airtable update çağrısı
+    const response = await apiService.patch(`/appointments`, { records })
+
+    if (response.status === 200) {
+      closeUpdateModal()
+      getAllAppointments()
+    }
+  } catch (error : any) {
+    console.error('Error updating appointment:', error.response?.data || error.message)
+  } finally {
+    updateIsLoading.value = false
+  }
+}
+
+
+
 const openCreateModal = () => {
   createAppointmentModalShow.value = true
+}
+
+const removeContactFromUpdate = (contactId: string) => {
+  selectedAppointment.value.contact_id = selectedAppointment.value.contact_id.filter(c => c !== contactId)
+}
+
+const toggleAgentInUpdate = (agentId: string) => {
+  if (selectedAppointment.value.agent_id.includes(agentId)) {
+    selectedAppointment.value.agent_id = selectedAppointment.value.agent_id.filter(id => id !== agentId)
+  } else {
+    selectedAppointment.value.agent_id.push(agentId)
+  }
+}
+
+const getAgentName = (agentId: string) => {
+  const agent = agents.value.find(a => a.id === agentId)
+  return agent ? `${agent.fields.agent_name} ${agent.fields.agent_surname}` : ''
 }
 
 
@@ -356,7 +581,6 @@ watch(createAppointmentModalShow, (newVal) => {
     searchContactQuery.value = ''
     selectedAgentIds.value = []
     showAgentDropdown.value = false
-    
     createAppointmentForm.value = {
       appointment_date: new Date(),
       appointment_address: "",
@@ -397,11 +621,6 @@ const createAppointment = async () => {
   } finally {
     createIsLoading.value = false
   }
-}
-
-const getAgentName = (agentId: string) => {
-  const agent = agents.value.find(a => a.id === agentId)
-  return agent ? `${agent.fields.agent_name} ${agent.fields.agent_surname}` : ''
 }
 
 const toggleAgentDropdown = () => {
@@ -651,15 +870,31 @@ const getTimeRemaining = (isCancelled: boolean | undefined, date: string): strin
   
   const days = Math.floor(duration.asDays())
   const hours = Math.floor(duration.asHours() % 24)
+  const minutes = Math.floor(duration.asMinutes() % 60)
   
   if (days > 0) {
     return `${days} days`
   }
-  return `${hours} hours`
+  if (hours > 0) {
+    return `${hours} hours`
+  }
+  return `${minutes} min`
 }
 
 const findAgent = (agentId: string): Agent | undefined => {
   return agents.value.find(agent => agent.id === agentId)
+}
+
+
+const findContact = (contactId: string): Contact | undefined => {
+  return contacts.value.find(contact => contact.id === contactId)
+}
+
+const getContactField = (contactId: string, field: 'contact_name' | 'contact_surname' | 'contact_email' | 'contact_phone'): string => {
+  const contact = findContact(contactId)
+  if (!contact?.fields?.[field]) return ''
+  const value = Array.isArray(contact.fields[field]) ? contact.fields[field][0] : contact.fields[field]
+  return String(value)
 }
 
 const appointmentStatus = (isCancelled : boolean | undefined, date : string) : string => {

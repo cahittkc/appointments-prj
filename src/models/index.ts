@@ -53,3 +53,17 @@ export interface CreateAppointmentForm {
     agent_id: string[];
     is_cancelled?: boolean;
 }
+
+
+
+export interface editAppointmentForm {
+    id : string
+    appointment_date: string;
+    appointment_address: string;
+    contact_id: string[];
+    agent_id: string[];
+    is_cancelled?: boolean;
+    status?: string;
+}
+
+
