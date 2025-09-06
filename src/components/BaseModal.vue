@@ -1,13 +1,14 @@
 <template>
   <Transition name="modal">
     <div v-if="isOpen" :class="`fixed inset-0 z-${zIndex} overflow-y-auto`" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-      <div class="flex min-h-screen items-center justify-center p-4 text-center sm:p-0">
-        <div class="fixed inset-0 bg-gray-50/50 transition-opacity" aria-hidden="true" @click="$emit('close')"></div>
+      <!-- Desktop Layout -->
+      <div class="hidden sm:flex min-h-screen items-center justify-center p-4 text-center">
+        <div class="fixed inset-0 bg-gray-50/50 transition-opacity" aria-hidden="true"></div>
 
-        <div class="relative flex flex-col min-h-[700px] h-[700px] transform rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
-          <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
-            <div class="sm:flex sm:items-start">
-              <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left w-full">
+        <div class="relative flex flex-col min-h-[500px] transform rounded-lg bg-white text-left shadow-xl transition-all my-8 w-full max-w-lg">
+          <div class="bg-white px-6 pb-4 pt-5">
+            <div class="flex items-start">
+              <div class="mt-3 text-left w-full">
                 <h3 class="text-base font-semibold leading-6 text-gray-900 flex items-center justify-center" id="modal-title">
                   <slot name="title"></slot>
                 </h3>
@@ -17,7 +18,25 @@
               </div>
             </div>
           </div>
-          <div class="flex items-center justify-end px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6 mt-auto ml-auto">
+          <div class="flex items-center justify-end px-6 py-3 flex-row-reverse mt-auto ml-auto">
+            <slot name="footer"></slot>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mobile Layout -->
+      <div class="sm:hidden fixed inset-0 flex items-center justify-center p-4">
+        <div class="fixed inset-0 bg-gray-50/50 transition-opacity" aria-hidden="true"></div>
+        <div class="relative bg-white rounded-lg shadow-xl w-full max-h-[90vh] flex flex-col">
+          <div class="flex-1 px-4 py-6 overflow-y-auto">
+            <h3 class="text-lg font-semibold leading-6 text-gray-900 text-center mb-6" id="modal-title">
+              <slot name="title"></slot>
+            </h3>
+            <div>
+              <slot name="content"></slot>
+            </div>
+          </div>
+          <div class="border-t border-gray-200 px-4 py-4 bg-gray-50 rounded-b-lg">
             <slot name="footer"></slot>
           </div>
         </div>
@@ -27,6 +46,8 @@
 </template>
 
 <script setup lang="ts">
+import { watch } from 'vue'
+
 const props = withDefaults(defineProps<{
   isOpen: boolean
   zIndex?: number
@@ -37,6 +58,14 @@ const props = withDefaults(defineProps<{
 defineEmits<{
   (e: 'close'): void
 }>()
+
+watch(() => props.isOpen, (newValue) => {
+  if (newValue) {
+    document.body.style.overflow = 'hidden'
+  } else {
+    document.body.style.overflow = 'auto'
+  }
+})
 </script>
 
 <style scoped>
