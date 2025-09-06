@@ -4,7 +4,7 @@
       <div class="flex min-h-screen items-center justify-center p-4 text-center sm:p-0">
         <div class="fixed inset-0 bg-gray-50/80 transition-opacity" aria-hidden="true" @click="$emit('close')"></div>
 
-        <div class="relative flex flex-col min-h-[400px] h-[400px] transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
+        <div class="relative flex flex-col min-h-[400px] h-[400px] transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg max-sm:mx-2 max-sm:w-[calc(100vw-2rem)]">
           <div class="absolute top-0 right-0 mt-4 mr-4">
             <button type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 cursor-pointer" @click="$emit('close')">
               <CircleX class="w-5 h-5" />

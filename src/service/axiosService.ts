@@ -4,26 +4,26 @@ import type { AxiosRequestConfig, AxiosResponse } from 'axios'
 
 
 /**
- * Her çağrıda güncel baseURL ile axios instance döner
+ * Returns axios instance with current baseURL on each call
  */
 function getApiInstance() {
   const api = axios.create({
     baseURL:  "https://api.airtable.com/v0/appkTtnhXACqj0kag",
-    // İstersen timeout, headers vs. ekleyebilirsin
+    // You can add timeout, headers, etc. if needed
   })
 
-  // Response interceptor: Hata yönetimi
+  // Response interceptor: Error handling
   api.interceptors.response.use(
     (response: AxiosResponse) => response,
     (error: any) => {
-      // Burada genel hata yönetimi yapabilirsin
+      // You can implement general error handling here
       return Promise.reject(error)
     }
   );
 
   api.interceptors.request.use(
     (config) => {
-        // Token varsa header'a ekle
+        // Add token to header if available
         const token = 'patZ8XD7iLvjw3hiW.0fe3bd729fe1f4b9a30c630b89f91dab7cfce4e4db90eadf616d8a4d860a66ec';
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
@@ -38,11 +38,11 @@ function getApiInstance() {
 }
 
 /**
- * Genel amaçlı API fonksiyonu
- * @param method - 'get', 'post', 'put', 'delete' vs.
- * @param url - API endpoint (örn: '/users')
- * @param data - (Opsiyonel) POST/PUT için body
- * @param config - (Opsiyonel) Axios config
+ * General purpose API function
+ * @param method - 'get', 'post', 'put', 'delete', etc.
+ * @param url - API endpoint (e.g., '/users')
+ * @param data - (Optional) Body for POST/PUT requests
+ * @param config - (Optional) Axios config
  * @returns AxiosResponse
  */
 export async function apiRequest<T = any>(
