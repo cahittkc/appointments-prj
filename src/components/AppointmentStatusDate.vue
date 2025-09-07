@@ -5,7 +5,7 @@
       <span v-if="appointmentStatus(is_cancelled !== undefined ? is_cancelled : undefined, appointment_date) === 'Upcoming'" class="text-nowrap  text-xs flex items-center justify-center">{{ getTimeRemaining(is_cancelled !== undefined ? is_cancelled : undefined, appointment_date) }}</span>
     </div>
     <div class="text-white flex gap-0.5 items-center justify-between gap-x-2">
-      <span class="max-sm:hidden">
+      <span class="">
         <Clock class="w-4 h-4 text-white" />
       </span>
       <span class="text-xs text-nowrap"> 

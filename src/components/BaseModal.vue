@@ -25,11 +25,11 @@
       </div>
 
       <!-- Mobile Layout -->
-      <div class="sm:hidden fixed inset-0 flex items-center justify-center p-2">
+      <div class="sm:hidden fixed inset-0 flex items-start justify-center p-2 pt-10 overflow-y-auto">
         <div class="fixed inset-0 bg-gray-50/50 transition-opacity" aria-hidden="true"></div>
         <div class="relative bg-[#f4fafa] rounded-lg shadow-xl w-full  flex flex-col">
-          <div class="flex-1 px-2 py-6 overflow-y-auto">
-            <h3 class="text-lg font-semibold leading-6 text-gray-900 text-center mb-6" id="modal-title">
+          <div class="flex-1 px-2 py-6">
+            <h3 class="text-lg font-semibold leading-6 text-gray-900 text-center mb-6 flex items-center justify-center" id="modal-title">
               <slot name="title"></slot>
             </h3>
             <div>

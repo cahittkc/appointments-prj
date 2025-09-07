@@ -70,7 +70,7 @@
 
         </div>
         <div class="flex items-center group w-[360px]">
-          <input @input="filterAppointments" v-model="searchText" type="text" placeholder="Search..." class="w-full placeholder:text-center text-xs min-w-[220px] pl-10 pr-4 py-2.5 h-[42px] bg-white border border-gray-300 rounded-tl-lg rounded-bl-lg focus:outline-none" />
+          <input v-model="searchText" type="text" placeholder="Search..." class="w-full placeholder:text-center text-xs min-w-[220px] pl-10 pr-4 py-2.5 h-[42px] bg-white border border-gray-300 rounded-tl-lg rounded-bl-lg focus:outline-none" />
           <div class="px-3 py-2.5 bg-white h-[42px] flex items-center justify-center border-2 border-gray-300 transition-all rounded-tr-lg rounded-br-lg  group-focus-within:border-pink-500">
             <Search class="text--gray-500 w-4 h-4" />
           </div>
@@ -83,7 +83,7 @@
         <div class="mb-4">
           <div class="grid grid-cols-2 gap-3">
             <div class="flex items-center group w-full relative">
-              <input @keydown.enter="filterAppointments" v-model="searchText" type="text" placeholder="Search appointments..." class="w-full pl-4 pr-12 py-3 h-[48px] bg-white border border-gray-300 rounded-lg text-xs focus:outline-none text-sm" />
+              <input v-model="searchText" type="text" placeholder="Search appointments..." class="w-full pl-4 pr-12 py-3 h-[48px] bg-white border border-gray-300 rounded-lg text-xs focus:outline-none text-sm" />
               <Search class="absolute right-3 text-gray-500 w-4 h-4 z-10" />
             </div>
             <div>
@@ -99,9 +99,6 @@
 
         <!-- Filters Row -->
         <div class="space-y-3">
-          <!-- Status Filter -->
-          
-
           <!-- Date Range -->
           <div class="grid grid-cols-2 gap-3">
             <div class="modal">
@@ -157,7 +154,7 @@
           New appointment added! The list will be sorted by date in 7 seconds.
         </div>
         <div class="flex items-center justify-between">
-          <span class="text-xs text-gray-400">{{ withOutFilterAppointments.length }} found</span>
+          <span class="text-xs text-gray-400">{{ filteredAppointments.length }} found</span>
           <button @click="openCreateModal" class="px-3 py-2 bg-pink-500 text-white flex items-center rounded-md gap-x-2">
             <CirclePlusIcon class="w-4 h-4" />
             <span class="text-sm">New</span>
@@ -237,7 +234,7 @@
                             +{{ app.fields.agent_id?.length - 2 }}
                           </span>
                         </div>
-                        <div v-if="showAgentListForAppointment[app.id]" class="absolute top-full -left-[130px] max-md:left-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-300 py-2 z-[100]" data-appointment-dropdown :data-appointment-id="app.id">
+                        <div v-if="showAgentListForAppointment[app.id]" class="absolute top-full -left-[130px] max-md:-left-10 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-300 py-2 z-[100]" data-appointment-dropdown :data-appointment-id="app.id">
                           <div @click="(e) => {e.stopPropagation();}" v-for="agentId in app.fields.agent_id.slice(2)" :key="agentId" class="flex items-center gap-x-3 px-4 py-2 hover:bg-gray-50">
                             <div 
                               class="w-8 h-8 rounded-full flex items-center justify-center"
@@ -333,261 +330,32 @@
 
 
   <!--Create Appoinment Modal-->
-  <BaseModal @close="createAppointmentModalShow = false" :isOpen="createAppointmentModalShow">
-    <template #title>
-      <div class="flex items-center gap-x-1.5">
-        <CalendarPlus2 class="w-5 h-5" />
-        <span class="text-md font-semibold text-gray-500">Create an Appointment</span>
-      </div>
-    </template>
-
-    <template #content>
-        <div class="flex flex-col gap-y-6 mt-6">
-          <div class="relative">
-            <div v-if="createAppointmentForm.contact_id.length === 0" class="flex flex-col gap-y-1">
-              <div class="flex items-center group  w-full">
-                <input :class="{'!border-red-600 border' : v$.createAppointmentForm.contact_id.$errors.length > 0}" v-model="searchContactQuery" type="text" placeholder="Search..." class="w-full pl-10 pr-4 py-2.5 h-[42px] text-xs bg-white border border-gray-300 rounded-tl-lg rounded-bl-lg placeholder:text-center focus:outline-none" />
-                <div class="px-3 py-2.5 bg-black h-[42px] flex items-center justify-center border border-gray-300 transition-all rounded-tr-lg rounded-br-lg">
-                  <Search class="text-white w-4 h-4" />
-                </div>
-              </div>
-              <div class="flex gap-x-1 items-center" v-for="error of v$.createAppointmentForm.contact_id.$errors" :key="error.$uid">
-                  <span v-if="v$.createAppointmentForm.contact_id.$errors" class="text-[11px] text-red-500"> At least one contact is required </span>
-              </div>
-            </div>
-
-            <!-- Selected Contacts -->
-            <div class="max-h-60 overflow-y-auto flex flex-col gap-y-2.5" >
-              <template v-for="c in createAppointmentForm.contact_id">
-                <div class="flex flex-col gap-y-2 flex-1 items-start bg-white border border-gray-300 rounded-lg p-4 relative">
-                    <ContactInfo 
-                      :contact-name="getContactField(c, 'contact_name')"
-                      :contact-surname="getContactField(c, 'contact_surname')"
-                      :contact-email="getContactField(c, 'contact_email')"
-                      :contact-phone="getContactField(c, 'contact_phone')"
-                      container-class=""
-                    />
-                    <X @click="removeContactFromCreateAppointment(c)" class="absolute right-2 top-2  text-gray-500 w-4 h-4 cursor-pointer" />                     
-                </div>
-              </template>
-            </div>
-
-            <!-- Search Results -->
-            <div v-if="searchContactQuery && availableContacts.length > 0" class="absolute w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg z-50 max-h-60 overflow-y-auto">
-              <div v-for="contact in availableContacts" :key="contact.id" @click="selectContact(contact.id)" class="flex items-center gap-x-2 px-4 py-2 hover:bg-gray-50 cursor-pointer">
-                <div class="flex flex-col">
-                  <span class="text-sm">{{ contact.fields.contact_name }} {{ contact.fields.contact_surname }}</span>
-                  <span class="text-xs text-gray-500">{{ contact.fields.contact_email }}</span>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="flex flex-col gap-y-1">
-            <div :class="{'!border-red-600 border' : v$.createAppointmentForm.appointment_address.$errors.length > 0}" class="flex items-center h-[42px] bg-white border border-gray-300 rounded-sm w-full relative">
-              <span v-if="createAppointmentForm.appointment_address === ''" class="text-xs text-gray-500 absolute top-[11px] -translate-y-1/2 left-3">Address</span>
-              <input :class="{'!pl-4' : createAppointmentForm.appointment_address !== ''}" v-model="createAppointmentForm.appointment_address" type="text"  class="w-full pl-10 pr-4 py-2.5 h-[42px] text-xs outline-0 pt-4" />
-              <House class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 w-4 h-4" />
-            </div>
-            <div class="flex gap-x-1 items-center" v-for="error of v$.createAppointmentForm.appointment_address.$errors" :key="error.$uid">
-                <span v-if="v$.createAppointmentForm.appointment_address.$errors" class="text-[11px] text-red-500"> Address is required </span>
-            </div>
-          </div>
-          <AgentDropdown
-            :agents="agents"
-            :selected-agent-ids="createAppointmentForm.agent_id"
-            :is-open="showAgentDropdown"
-            :has-error="v$.createAppointmentForm.agent_id.$errors.length > 0"
-            @toggle-dropdown="toggleAgentDropdown"
-            @toggle-agent="toggleAgent"
-          />
-
-          <div class="modal relative">
-            <VueDatePicker :teleport="true" auto-apply :clearable="false" :min-date="new Date()"  format="dd/MM/yyyy HH:mm" v-model="createAppointmentForm.appointment_date" class="w-[240px] text-xs before:content-['Appointment_Date'] before:absolute before:top-0.5 before:left-3 before:text-[11px] before:z-10  before:text-gray-500" name="" id="" />
-          </div>
-        </div>
-    </template>
-    <template #footer>
-      <div class="flex justify-end gap-x-2">
-        <button  @click="closeCreateAppointmentModal" class="px-4 py-2 text-sm font-medium  bg-black text-white border border-gray-300 rounded-md shadow-sm  focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500">Cancel</button>
-        <button @click="createAppointment" :disabled="createIsLoading" class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-pink-500 border border-transparent rounded-md shadow-sm hover:bg-pink-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 disabled:opacity-50 disabled:cursor-not-allowed">
-          <Loader2 v-if="createIsLoading" class="w-4 h-4 mr-2 -ml-1 animate-spin" />
-          Create
-        </button>
-      </div>
-    </template>
-  </BaseModal>
+  <CreateAppointmentModal 
+    :isOpen="createAppointmentModalShow" 
+    :agents="agents" 
+    :contacts="contacts" 
+    @close="closeCreateAppointmentModal" 
+    @appointment-created="handleAppointmentCreated"
+  />
 
 
    <!--Update Appoinment Modal-->
-  <BaseModal :isOpen="updateModal" @close="closeUpdateModal">
-    <template #title>
-      <div class="flex items-center gap-x-1.5">
-        <CalendarPlus2 class="w-5 h-5" />
-        <span class="text-md font-semibold text-gray-500">Edit the Appointment</span>
-      </div>
-    </template>
-
-    <template #content>
-      <div class="flex flex-col gap-y-2.5">
-              <div v-if="!addContactModalShow && selectedAppointment.contact_id.length === 0" @click="addContactModalShow = true" class="flex cursor-pointer bg-white gap-y-2 flex-1 items-center justify-center border border-dashed border-gray-300 rounded-lg p-4 min-h-[98px] relative">
-                  <UserPlus2 class="w-5 h-5 text-gray-500" />            
-              </div>
-              <div class="max-h-60 overflow-y-auto flex flex-col gap-y-2.5" >
-                <template v-for="c in selectedAppointment.contact_id">
-                  <div class="flex flex-col gap-y-2 flex-1 items-start bg-white border border-gray-300 rounded-lg p-4 relative">
-                      <ContactInfo 
-                        :contact-name="getContactField(c, 'contact_name')"
-                        :contact-surname="getContactField(c, 'contact_surname')"
-                        :contact-email="getContactField(c, 'contact_email')"
-                        :contact-phone="getContactField(c, 'contact_phone')"
-                        container-class=""
-                      />
-                      <X @click="removeContactFromUpdate(c)" class="absolute right-2 top-2  text-gray-500 w-4 h-4 cursor-pointer" />                     
-                  </div>
-                </template>
-              </div>
-              <div class="-mt-5" v-for="error of v$.selectedAppointment.contact_id.$errors" :key="error.$uid">
-                <span v-if="v$.selectedAppointment.contact_id.$errors" class="text-[11px] text-red-500">   At least one person must be added  </span>
-              </div>
-              <AddContactModal 
-                :is-open="addContactModalShow" 
-                @close="addContactModalShow = false"
-                :contacts="contacts"
-                :selected-contact-ids="selectedAppointment.contact_id"
-                @select-contact="addContactToUpdate">
-                <template #title>
-                  <div class="flex items-center gap-x-1.5">
-                    <UserPlus2 class="w-5 h-5" />
-                    <span class="text-md font-semibold text-gray-500">Add Contact</span>
-                  </div>
-                </template>
-                <template #body>
-                  <div class="flex flex-col gap-y-6 mt-6">
-                    <div class="relative">
-                      <div class="flex items-center group w-full">
-                        <input v-model="searchContactQuery" type="text" placeholder="Search..." class="w-full pl-10 pr-4 py-2.5 h-[42px] bg-gray-50 border border-gray-300 rounded-tl-lg rounded-bl-lg focus:outline-none" />
-                        <div class="px-3 py-2.5 bg-black h-[42px] flex items-center justify-center border border-gray-300 transition-all rounded-tr-lg rounded-br-lg">
-                          <Search class="text-white w-4 h-4" />
-                        </div>
-                      </div>
-                      <div v-if="searchContactQuery && availableContacts.length > 0" class="absolute w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg z-50 max-h-60 overflow-y-auto">
-                        <div v-for="contact in availableContacts" :key="contact.id" @click="addContactToUpdate(contact.id)" class="flex items-center gap-x-2 px-4 py-2 hover:bg-gray-50 cursor-pointer">
-                          <div class="flex flex-col text-left">
-                            <span class="text-sm">{{ contact.fields.contact_name }} {{ contact.fields.contact_surname }}</span>
-                            <span class="text-xs text-gray-500">{{ contact.fields.contact_email }}</span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </template>
-              </AddContactModal>
-
-              
-              <div class="flex flex-col gap-y-0.5">
-                <div :class="{'border-red-600': v$.selectedAppointment.appointment_address.$errors.length > 0}" v-if="!addContactModalShow" class="flex items-center h-[42px] bg-white border border-gray-300 rounded-sm w-full relative">
-                  <span v-if="selectedAppointment.appointment_address == ''" class="text-xs text-gray-500 absolute top-[11px] -translate-y-1/2 left-3">Address</span>
-                  <input :class="{'pt-4 !pl-10' : selectedAppointment.appointment_address == ''}" v-model="selectedAppointment.appointment_address" type="text"  class="w-full pl-4 pr-4 py-2.5 h-[42px] text-xs outline-0" />
-                  <X @click="selectedAppointment.appointment_address = ''" class="absolute right-3 top-2 cursor-pointer text-gray-500 w-4 h-4" />
-                </div>
-                <div v-for="error of v$.selectedAppointment.appointment_address.$errors" :key="error.$uid">
-                  <span v-if="v$.selectedAppointment.appointment_address.$errors" class="text-[11px] text-red-500"> Address is required </span>
-                </div>
-              </div>
-
-              <AgentDropdown
-                v-if="!addContactModalShow"
-                :agents="agents"
-                :selected-agent-ids="selectedAppointment.agent_id"
-                :is-open="showAgentDropdown"
-                :has-error="v$.selectedAppointment.agent_id.$errors.length > 0"
-                @toggle-dropdown="() => showAgentDropdown = !showAgentDropdown"
-                @toggle-agent="toggleAgentInUpdate"
-              />
-
-              <div v-if="!addContactModalShow" class="modal relative">
-                <VueDatePicker :teleport="true" auto-apply :clearable="false" :min-date="new Date()"  format="dd/MM/yyyy HH:mm" v-model="selectedAppointment.appointment_date" class="w-[240px] text-xs before:content-['Appointment_Date'] before:absolute before:top-0.5 before:left-3 before:text-[11px] before:z-10  before:text-gray-500" name="" id="" />
-              </div>
-
-              <div v-if="!addContactModalShow" class="flex items-center h-[42px] bg-white border border-gray-300 rounded-sm w-full relative">
-                <select v-model="selectedAppointment.is_cancelled" class="w-full pl-4 pr-4 py-2.5 h-[42px] text-xs outline-0 bg-transparent appearance-none cursor-pointer">
-                  <template v-if="new Date(selectedAppointment.appointment_date) > new Date()">
-                    <option :value="false">Upcoming</option>
-                    <option :value="true">Cancelled</option>
-                  </template>
-                  <template v-else>
-                    <option :value="false">Completed</option>
-                    <option :value="true">Cancelled</option>
-                  </template>
-                </select>
-                <ChevronDown class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 w-4 h-4" />
-              </div>
-
-              <!-- Related Appointments -->
-              <div v-if="selectedAppointment.contact_id.length > 0 && !addContactModalShow" class="mt-4">
-                <h4 class="text-sm font-medium text-gray-700 mb-2">Related Appointments</h4>
-                <div class="overflow-y-auto max-h-[188px] space-y-2">
-                  <template v-for="contactId in selectedAppointment.contact_id" :key="contactId">
-                    <div v-for="relatedApp in getContactOtherAppointments(contactId)" :key="relatedApp.id" @click="selectAppointmentForRelated(relatedApp)" class="flex sm:items-center max-sm:flex-col max-sm:gap-y-2 justify-between gap-4 p-4 bg-white rounded-lg border border-gray-300 cursor-pointer">
-                      <div class="flex flex-col gap-1 max-md:gap-y-3 flex-1">
-                        <div class="text-sm font-medium text-gray-900 flex gap-x-2 items-center">
-                          <House class="w-4 h-4 min-w-4 min-h-4 flex-shrink-0 text-gray-500" />
-                          <span>{{ relatedApp.fields.appointment_address }}</span>
-                        </div>
-                        <AppointmentStatusDate 
-                          :is_cancelled="relatedApp.fields.is_cancelled" 
-                          :appointment_date="relatedApp.fields.appointment_date" 
-                        />
-                      </div>
-                      <div class="flex items-center gap-x-2">
-                        <template v-for="(agentId, index) in relatedApp.fields.agent_id" :key="agentId">
-                          <div v-if="findAgent(agentId) && index < 1" class="relative group -ml-3 first:ml-0">
-                            <div 
-                              class="w-8 h-8 rounded-full flex items-center justify-center cursor-pointer ring-2 ring-white"
-                              :style="{ backgroundColor: findAgent(agentId)?.fields?.color || '#gray-400' }"
-                            >
-                              <span class="text-white text-xs">
-                                {{ findAgent(agentId)?.fields?.agent_name?.[0] || '?' }}{{ findAgent(agentId)?.fields?.agent_surname?.[0] || '?' }}
-                              </span>
-                            </div>
-                          </div>
-                        </template>
-                        <div v-if="relatedApp.fields.agent_id?.length > 1" class="relative group -ml-3">
-                          <div 
-                            class="w-8 h-8 bg-gray-400 rounded-full flex items-center justify-center cursor-pointer ring-2 ring-white"
-                          >
-                            <span class="text-white font-medium text-xs">
-                              +{{ relatedApp.fields.agent_id?.length - 1 }}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </template>
-                </div>
-              </div>
-        </div>
-    </template>
-
-
-    <template #footer>
-      <div class="flex justify-end gap-x-2 mt-auto">
-        <button  @click="closeUpdateModal" class="px-4 py-2 text-sm font-medium text-black bg-white border border-gray-300 rounded-md shadow-sm  focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500">Close</button>
-        <button @click="updateAppointment" :disabled="updateIsLoading" class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-pink-500 border border-transparent rounded-md shadow-sm hover:bg-pink-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 disabled:opacity-50 disabled:cursor-not-allowed">
-          <Loader2 v-if="updateIsLoading" class="w-4 h-4 mr-2 -ml-1 animate-spin" />
-          Save
-        </button>
-      </div>
-    </template>
-
-
-  </BaseModal>
+  <UpdateAppointmentModal
+    :is-open="updateModal"
+    :agents="agents"
+    :contacts="contacts"
+    :appointments="withOutFilterAppointments"
+    :selected-appointment="selectedAppointment"
+    @close="closeUpdateModal"
+    @appointment-updated="handleAppointmentUpdated"
+    @select-related-appointment="selectAppointmentForRelated"
+  />
 
 
 </template>
 
 <script lang="ts">
-import { Agent, Appointment, Contact, CreateAppointmentForm, editAppointmentForm } from '@/models'
+import { Agent, Appointment, Contact, editAppointmentForm } from '@/models'
 import { apiService } from '@/service/axiosService'
 import { useToast } from 'vue-toastification'
 import { User, Mail, Phone, House, Search, Check, ChevronLeft, ChevronRightIcon, CirclePlusIcon, CalendarPlus2, ChevronDown, X, Loader2, UserPlus2, CheckCircle } from 'lucide-vue-next';
@@ -595,30 +363,23 @@ import VueDatePicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css';
 import { Vue3Lottie } from 'vue3-lottie';
 import Calendar from "../public/Calendar.json"
-import BaseModal from './components/BaseModal.vue';
 import LoadingOverlay from './components/LoadingOverlay.vue';
-import AddContactModal from './components/AddContactModal.vue';
 import AppointmentStatusDate from './components/AppointmentStatusDate.vue';
 import ContactInfo from './components/ContactInfo.vue';
-import AgentDropdown from './components/AgentDropdown.vue';
-import { useVuelidate } from '@vuelidate/core'
-import { minLength , requiredIf } from '@vuelidate/validators'
+import CreateAppointmentModal from './components/CreateAppointmentModal.vue'
+import UpdateAppointmentModal from './components/UpdateAppointmentModal.vue'
 import moment from 'moment';
 
 const toast = useToast()
 
 export default {
   name: 'App',
-  setup () {
-    return { v$: useVuelidate() }
-  },
   components: {
-    BaseModal,
     LoadingOverlay,
-    AddContactModal,
     AppointmentStatusDate,
     ContactInfo,
-    AgentDropdown,
+    CreateAppointmentModal,
+    UpdateAppointmentModal,
     VueDatePicker,
     Vue3Lottie,
     User,
@@ -642,19 +403,13 @@ export default {
       emptyCalendarAnimation: Calendar,
       newAppointmentIds: [] as string[],
       withOutFilterAppointments: [] as Appointment[],
-      appointments: [] as Appointment[],
       agents: [] as Agent[],
       contacts: [] as Contact[],
       showAllAgents: false,
       showAgentListForAppointment: {} as Record<string, boolean>,
       searchText: '',
       isLoading: false,
-      createIsLoading: false,
       createAppointmentModalShow: false,
-      searchContactQuery: '',
-      showAgentDropdown: false,
-      addContactModalShow: false,
-      updateIsLoading: false,
       selectedAppointment: {
         id: '',
         appointment_date: '',
@@ -663,22 +418,7 @@ export default {
         agent_id: [],
         is_cancelled: false,
       } as editAppointmentForm,
-      originalAppointment: {
-        id: '',
-        appointment_date: '',
-        appointment_address: '',
-        contact_id: [],
-        agent_id: [],
-        is_cancelled: false,
-      } as editAppointmentForm,
       updateModal: false,
-      createAppointmentForm: {
-        appointment_date: new Date(),
-        appointment_address: "",
-        contact_id: [],
-        agent_id: [],
-        is_cancelled: false,
-      } as CreateAppointmentForm,
       currentPage: 1,
       itemsPerPage: 10,
       filterObj: {
@@ -690,57 +430,86 @@ export default {
       isPageLoaded: false
     }
   },
-  validations() {
-    return {
-      createAppointmentForm: {
-        appointment_date: {required : requiredIf(() => this.createAppointmentModalShow)},
-        appointment_address: {required : requiredIf(() => this.createAppointmentModalShow)},
-        contact_id: {minLength : minLength(1), required : requiredIf(() => this.createAppointmentModalShow)},
-        agent_id: {minLength : minLength(1), required : requiredIf(() => this.createAppointmentModalShow)},
-        is_cancelled: {},
-      },
-      selectedAppointment: {
-        id: {required : requiredIf(() => this.updateModal)},
-        appointment_date: {required : requiredIf(() => this.updateModal)},
-        appointment_address: {required : requiredIf(() => this.updateModal)},
-        contact_id: {minLength : minLength(1), required : requiredIf(() => this.updateModal)},
-        agent_id: {minLength : minLength(1), required : requiredIf(() => this.updateModal)},
-        is_cancelled: {},
-      }  
-    }
-  },
+
   computed: {
-    availableContacts() {
-      // For create appointment modal, use createAppointmentForm.contact_id
-      // For update appointment modal, use selectedAppointment.contact_id
-      const selectedContactIds = this.createAppointmentModalShow 
-        ? this.createAppointmentForm.contact_id 
-        : (Array.isArray(this.selectedAppointment.contact_id) ? this.selectedAppointment.contact_id : [this.selectedAppointment.contact_id])
+    // Computed property for filtered appointments
+    filteredAppointments() {
+      const { status, startDate, endDate, agent_ids } = this.filterObj
+      const searchQuery = this.searchText.toLowerCase()
       
-      let filteredContacts = this.contacts.filter(contact => !selectedContactIds.includes(contact.id))
-      
-      // Filter by search query if exists
-      if (this.searchContactQuery) {
-        const query = this.searchContactQuery.toLowerCase()
-        filteredContacts = filteredContacts.filter(contact => {
-          return (
-            contact.fields.contact_name.toLowerCase().includes(query) ||
-            contact.fields.contact_surname.toLowerCase().includes(query) ||
-            contact.fields.contact_email.toLowerCase().includes(query)
+      // Optimize filtering process - apply all filters in a single pass
+      return this.withOutFilterAppointments.filter(app => {
+        // Always show newly added appointments (for animation)
+        if (this.newAppointmentIds.includes(app.id)) {
+          return true
+        }
+        // Status filter
+        if (status !== null && app.fields.status !== status) {
+          return false
+        }
+        
+        // Date range filter
+        if (startDate && endDate) {
+          const startMoment = moment(startDate)
+          const endMoment = moment(endDate)
+          const appointmentMoment = moment(app.fields.appointment_date)
+          
+          if (!appointmentMoment.isBetween(startMoment, endMoment, 'minute', '[]')) {
+            return false
+          }
+        }
+        
+        // Agent filter
+        if (agent_ids.length > 0) {
+          if (!app.fields.agent_id || !Array.isArray(app.fields.agent_id) || 
+              !app.fields.agent_id.some(agentId => agent_ids.includes(agentId))) {
+            return false
+          }
+        }
+        
+        // Search text filter - only apply if 3 or more characters
+        if (searchQuery && searchQuery.length >= 3) {
+          const contactName = Array.isArray(app.fields.contact_name) && app.fields.contact_name.length > 0 ? 
+                            app.fields.contact_name[0] : ''
+          const contactSurname = Array.isArray(app.fields.contact_surname) && app.fields.contact_surname.length > 0 ? 
+                               app.fields.contact_surname[0] : ''
+          const contactEmail = Array.isArray(app.fields.contact_email) && app.fields.contact_email.length > 0 ? 
+                             app.fields.contact_email[0] : ''
+          const contactPhone = Array.isArray(app.fields.contact_phone) && app.fields.contact_phone.length > 0 ? 
+                             app.fields.contact_phone[0].toString() : ''
+          
+          const matchesSearch = (
+            // Search in address
+            app.fields.appointment_address.toLowerCase().includes(searchQuery) ||
+            // Search in customer name
+            contactName.toLowerCase().includes(searchQuery) ||
+            contactSurname.toLowerCase().includes(searchQuery) ||
+            // Search in email
+            contactEmail.toLowerCase().includes(searchQuery) ||
+            // Search in phone number
+            contactPhone.includes(searchQuery)
           )
-        })
-      }
-      
-      return filteredContacts
+          
+          if (!matchesSearch) {
+            return false
+          }
+        }
+        
+        // Passed all filters
+        return true
+      })
     },
+
     paginatedAppointments() {
       const start = (this.currentPage - 1) * this.itemsPerPage
       const end = start + this.itemsPerPage
-      return this.appointments.slice(start, end)
+      // Now using filteredAppointments instead of appointments
+      return this.filteredAppointments.slice(start, end)
     },
 
     totalPages() {
-      return Math.ceil(this.appointments.length / this.itemsPerPage)
+      // Now using filteredAppointments instead of appointments
+      return Math.ceil(this.filteredAppointments.length / this.itemsPerPage)
     },
     displayedPages() {
       const total = this.totalPages
@@ -781,54 +550,24 @@ export default {
   },
   watch: {
     "filterObj" : {
-      handler(newVal) {
+      handler() {
         this.filterAppointments()
       },
       deep: true
     },
-    createAppointmentModalShow(newVal) {
-      if (!newVal) {
-        this.searchContactQuery = ''
-        this.showAgentDropdown = false
-        this.createAppointmentForm = {
-          appointment_date: new Date(),
-          appointment_address: "",
-          contact_id: [],
-          agent_id: [],
-          is_cancelled: false,
+    "searchText": {
+      handler(newVal) {
+        // Only filter when search text is 3 characters or more, or when empty
+        if (newVal.length >= 3 || newVal.length === 0) {
+          this.filterAppointments()
         }
-      }
-    }
+      },
+      // Add debounce to filter after user finishes typing, not on every keystroke
+      immediate: false
+    },
+
   },
   methods: {
-    getContactOtherAppointments(contactId: string) {
-      return this.withOutFilterAppointments.filter(app => {
-        const appContactIds = Array.isArray(app.fields.contact_id) ? app.fields.contact_id : [app.fields.contact_id]
-        return appContactIds.includes(contactId) && app.id !== this.selectedAppointment.id
-      }).sort((a, b) => {
-        const dateA = new Date(a.fields.appointment_date)
-        const dateB = new Date(b.fields.appointment_date)
-        return dateB.getTime() - dateA.getTime() // Yeniden eskiye sıralama
-      })
-    },
-    addContactToUpdate(contactId: string) {
-      this.selectedAppointment.contact_id.push(contactId)
-      this.addContactModalShow = false
-    },
-    removeContactFromCreateAppointment(contactId: string) {
-      const index = this.createAppointmentForm.contact_id.indexOf(contactId)
-      if (index > -1) {
-        this.createAppointmentForm.contact_id.splice(index, 1)
-      }
-    },
-    toggleUpdateModal() {
-      this.isLoading = true
-      this.updateModal = false
-      setTimeout(() => {
-        this.updateModal = true
-        this.isLoading = false
-      }, 300);
-    },
     selectAppointment(appointment: Appointment) {
       const currentStatus = this.appointmentStatus(appointment.fields.is_cancelled, appointment.fields.appointment_date)
       
@@ -842,15 +581,13 @@ export default {
         status: currentStatus
       }
       
-      // Save original data for reset functionality
-      this.originalAppointment = JSON.parse(JSON.stringify(appointmentData))
       this.selectedAppointment = appointmentData
       this.updateModal = true
     },
     selectAppointmentForRelated(relatedApp: Appointment){
       const currentStatus = this.appointmentStatus(relatedApp.fields.is_cancelled, relatedApp.fields.appointment_date)
       
-      // Completed durumunda is_cancelled false olmalı ki selectbox'ta "Completed" görünsün
+      // In Completed status, is_cancelled should be false so "Completed" appears in selectbox
       let isCancelled = false
       if (currentStatus === 'Cancelled') {
         isCancelled = true
@@ -875,155 +612,50 @@ export default {
       }, 300);
     },
     closeUpdateModal() {
-      // Reset to original appointment data if it exists
-      if (this.originalAppointment.id) {
-        this.selectedAppointment = JSON.parse(JSON.stringify(this.originalAppointment))
-      } else {
-        this.selectedAppointment = {
-          id: '',
-          appointment_date: '',
-          appointment_address: '',
-          contact_id: [],
-          agent_id: [],
-          is_cancelled: false,
-        }
-      }
-      this.searchContactQuery = ''
-      this.v$.$reset();
       this.updateModal = false
-    },
-    async updateAppointment() {
-      const valid = await this.v$.$validate()
-      console.log(this.v$.$errors);
-      
-      console.log(valid);
-      
-      if (!valid) {
-        return
-      }
-      this.updateIsLoading = true
-      if(this.selectedAppointment.agent_id) {
-        this.selectedAppointment.agent_id = this.selectedAppointment.agent_id.filter(id => id !== undefined && id !== null)
-      }
-      try {
-        const records = [
-          {
-            id: this.selectedAppointment.id,
-            fields: {
-              appointment_date: this.selectedAppointment.appointment_date,
-              appointment_address: this.selectedAppointment.appointment_address,
-              contact_id: this.selectedAppointment.contact_id,
-              agent_id: this.selectedAppointment.agent_id,
-              is_cancelled: this.selectedAppointment.is_cancelled,
-            }
-          }
-        ]
-
-        // Airtable update çağrısı
-        const response = await apiService.patch(`/appointments`, { records })
-
-        if (response.status === 200) {
-          const updatedAppointment = this.processAppointmentData(response.data.records)[0]
-          const index = this.appointments.findIndex(a => a.id === updatedAppointment.id)
-          const withoutFilterIndex = this.withOutFilterAppointments.findIndex(a => a.id === updatedAppointment.id)
-          
-          if (index !== -1) {
-            this.appointments[index] = updatedAppointment
-          }
-          
-          if (withoutFilterIndex !== -1) {
-            this.withOutFilterAppointments[withoutFilterIndex] = updatedAppointment
-          }
-          
-          // Update original appointment data after successful update
-          this.originalAppointment = JSON.parse(JSON.stringify(this.selectedAppointment))
-          
-          this.closeUpdateModal()
-          toast.success("Appointment updated successfully")
-        }
-      } catch (error : any) {
-        console.error('Error updating appointment:', error.response?.data || error.message)
-        toast.error("Appointment updated failed")
-      } finally {
-        this.updateIsLoading = false
-      }
-    },
-    openCreateModal() {
-      this.createAppointmentModalShow = true
-    },
-    removeContactFromUpdate(contactId: string) {
-      this.selectedAppointment.contact_id = this.selectedAppointment.contact_id.filter(c => c !== contactId)
-    },
-    toggleAgentInUpdate(agentId: string) {
-      if (this.selectedAppointment.agent_id.includes(agentId)) {
-        this.selectedAppointment.agent_id = this.selectedAppointment.agent_id.filter(id => id !== agentId)
-      } else {
-        this.selectedAppointment.agent_id.push(agentId)
-      }
     },
     getAgentName(agentId: string) {
       const agent = this.agents.find(a => a.id === agentId)
       return agent ? `${agent.fields.agent_name} ${agent.fields.agent_surname}` : ''
     },
     closeCreateAppointmentModal() {
-      this.v$.$reset();
       this.createAppointmentModalShow = false
     },
-    async createAppointment() {
-      const valid = await this.v$.$validate()
-      if (!valid) {
-        return
-      }
-      this.createIsLoading = true
-      this.createAppointmentForm.appointment_date = moment(this.createAppointmentForm.appointment_date).toDate()
-      let data = {
-        fields: {
-          appointment_date: this.createAppointmentForm.appointment_date,
-          appointment_address: this.createAppointmentForm.appointment_address,
-          contact_id: this.createAppointmentForm.contact_id,
-          agent_id: this.createAppointmentForm.agent_id,
-          is_cancelled: false,
-        },
-      }
-      const records = [data]
-      try {
-        const response = await apiService.post('/appointments', {"records" : records})
-        if (response.status === 200) {
-          const newAppointment = response.data.records[0]
-          this.appointments.unshift(newAppointment)
-          this.withOutFilterAppointments.unshift(newAppointment)
-          
-          this.createIsLoading = false
-          this.closeCreateAppointmentModal()
-          toast.success("Appointment created successfully")
-          
-          this.newAppointmentIds = [newAppointment.id]
-          window.scrollTo({
-            top: 0,
-            behavior: 'smooth'
-          })
-          setTimeout(() => {
-            this.appointments = this.processAppointmentData(this.appointments)
-            this.withOutFilterAppointments = this.processAppointmentData(this.withOutFilterAppointments)
-            this.newAppointmentIds = []
-          }, 7000)
-        }
-      } catch (error) {
-        toast.error("Appointment created failed")
-      } finally {
-        this.createIsLoading = false
-      }
+    handleAppointmentCreated(appointment: Appointment) {
+      console.log('New appointment created:', appointment)
+      // First add the new appointment to the list
+      this.withOutFilterAppointments.unshift(appointment)
+      this.processAllAppointmentData()
+      this.newAppointmentIds = [appointment.id]
+      console.log('New appointment IDs:', this.newAppointmentIds)
+      
+      this.closeCreateAppointmentModal()
+      toast.success("Appointment created successfully")
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      })
+      
+      // Run filtering process after 7 seconds
+      setTimeout(() => {
+        console.log('Processing appointment data and applying filters after 7 seconds')
+        this.processAllAppointmentData()
+        this.filterAppointments()
+        this.newAppointmentIds = []
+        console.log('Animation ended, data processed and filtered')
+      }, 7000)
     },
-    toggleAgentDropdown() {
-      this.showAgentDropdown = !this.showAgentDropdown
-    },
-    toggleAgent(agentId: string) {
-      const index = this.createAppointmentForm.agent_id.indexOf(agentId)
-      if (index === -1) {
-        this.createAppointmentForm.agent_id.push(agentId)
-      } else {
-        this.createAppointmentForm.agent_id.splice(index, 1)
+    
+    handleAppointmentUpdated(appointment: Appointment) {
+      const index = this.withOutFilterAppointments.findIndex(a => a.id === appointment.id)
+      if (index !== -1) {
+        this.withOutFilterAppointments[index] = appointment
       }
+      this.closeUpdateModal()
+      toast.success("Appointment updated successfully")
+    },
+    openCreateModal() {
+      this.createAppointmentModalShow = true
     },
     processAppointmentData(records: any[]) {
       const sortedData = records.sort((a, b) => {
@@ -1038,19 +670,14 @@ export default {
         }
       }))
     },
+    // Newly added helper function - processes withOutFilterAppointments array
+    processAllAppointmentData() {
+      this.withOutFilterAppointments = this.processAppointmentData(this.withOutFilterAppointments)
+    },
     getContactName(contactId: string) {
       const contact = this.contacts.find(c => c.id === contactId)
       if (!contact) return ''
       return `${contact.fields.contact_name} ${contact.fields.contact_surname}`
-    },
-    selectContact(contactId: string) {
-      if (!this.createAppointmentForm.contact_id.includes(contactId)) {
-        this.createAppointmentForm.contact_id.push(contactId)
-      }
-      this.searchContactQuery = ''
-    },
-    removeContact(contactId: string) {
-      this.createAppointmentForm.contact_id = this.createAppointmentForm.contact_id.filter(id => id !== contactId)
     },
     changePage(page: number | string) {
       if (typeof page === 'string') return;
@@ -1143,10 +770,8 @@ export default {
           }
         } while (offset !== undefined)
 
-        this.appointments = allRecords
         this.withOutFilterAppointments = allRecords
-        this.appointments = this.processAppointmentData(this.appointments)
-        this.withOutFilterAppointments = this.processAppointmentData(this.withOutFilterAppointments)
+        this.processAllAppointmentData()
       } catch (error) {
         console.error('Error fetching appointments:', error)
       } finally {
@@ -1178,57 +803,7 @@ export default {
       return 'Completed'
     },
     filterAppointments() {
-      const { status, startDate, endDate } = this.filterObj
-      let filteredData = [...this.withOutFilterAppointments]
-
-      // Filter by status
-      if (status !== null) {
-        filteredData = filteredData.filter(app => app.fields.status === status)
-      }
-
-      // Filter by date range
-      if (startDate && endDate) {
-        const startMoment = moment(startDate)
-        const endMoment = moment(endDate)
-        
-        filteredData = filteredData.filter(app => {
-          const appointmentMoment = moment(app.fields.appointment_date)
-          return appointmentMoment.isBetween(startMoment, endMoment, 'minute', '[]')
-        })
-      }
-
-      // Filter by selected agents
-      if (this.filterObj.agent_ids.length > 0) {
-        filteredData = filteredData.filter(app => {
-          return app.fields.agent_id && Array.isArray(app.fields.agent_id) && app.fields.agent_id.some(agentId => this.filterObj.agent_ids.includes(agentId))
-        })
-      }
-
-      // Filter by search text
-      if (this.searchText && this.searchText.length >= 3) {
-        const searchQuery = this.searchText.toLowerCase()
-        filteredData = filteredData.filter(app => {
-          const contactName = Array.isArray(app.fields.contact_name) && app.fields.contact_name.length > 0 ? app.fields.contact_name[0] : ''
-          const contactSurname = Array.isArray(app.fields.contact_surname) && app.fields.contact_surname.length > 0 ? app.fields.contact_surname[0] : ''
-          const contactEmail = Array.isArray(app.fields.contact_email) && app.fields.contact_email.length > 0 ? app.fields.contact_email[0] : ''
-          const contactPhone = Array.isArray(app.fields.contact_phone) && app.fields.contact_phone.length > 0 ? app.fields.contact_phone[0].toString() : ''
-
-          return (
-            // Search in address
-            app.fields.appointment_address.toLowerCase().includes(searchQuery) ||
-            // Search in customer name
-            contactName.toLowerCase().includes(searchQuery) ||
-            contactSurname.toLowerCase().includes(searchQuery) ||
-            // Search in email
-            contactEmail.toLowerCase().includes(searchQuery) ||
-            // Search in phone number
-            contactPhone.includes(searchQuery)
-          )
-        })
-      }
-
-      this.appointments = filteredData
-      // Reset to first page when filters change
+      // Now only resetting page number, filtering is done by computed property
       this.currentPage = 1
     }
   },
@@ -1236,23 +811,16 @@ export default {
     await this.getAgents()
     await this.getContacts()
     await this.getAllAppointments()
-    this.filterAppointments()
     
-    // animation for short delay
+    // Animation for short delay
     setTimeout(() => {
       this.isPageLoaded = true
     }, 100)
     
     document.addEventListener('click', this.handleClickOutside)
-    document.addEventListener('click', (e) => {
-      if (this.showAgentDropdown) {
-        this.showAgentDropdown = false
-      }
-    })
   },
   unmounted() {
     document.removeEventListener('click', this.handleClickOutside)
-    document.removeEventListener('click', () => {})
   },
 }
 </script>
