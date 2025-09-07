@@ -5,8 +5,8 @@
       <div class="hidden sm:flex min-h-screen items-center justify-center p-4 text-center">
         <div class="fixed inset-0 bg-gray-50/50 transition-opacity" aria-hidden="true"></div>
 
-        <div class="relative flex flex-col min-h-[500px] transform rounded-lg bg-white text-left shadow-xl transition-all my-8 w-full max-w-lg">
-          <div class="bg-white px-6 pb-4 pt-5">
+        <div class="relative flex flex-col min-h-[500px] transform rounded-lg bg-[#f4fafa] text-left shadow-xl transition-all my-8 w-full max-w-lg">
+          <div class=" px-6 pb-4 pt-5">
             <div class="flex items-start">
               <div class="mt-3 text-left w-full">
                 <h3 class="text-base font-semibold leading-6 text-gray-900 flex items-center justify-center" id="modal-title">
@@ -25,10 +25,10 @@
       </div>
 
       <!-- Mobile Layout -->
-      <div class="sm:hidden fixed inset-0 flex items-center justify-center p-4">
+      <div class="sm:hidden fixed inset-0 flex items-center justify-center p-2">
         <div class="fixed inset-0 bg-gray-50/50 transition-opacity" aria-hidden="true"></div>
-        <div class="relative bg-white rounded-lg shadow-xl w-full max-h-[90vh] flex flex-col">
-          <div class="flex-1 px-4 py-6 overflow-y-auto">
+        <div class="relative bg-[#f4fafa] rounded-lg shadow-xl w-full  flex flex-col">
+          <div class="flex-1 px-2 py-6 overflow-y-auto">
             <h3 class="text-lg font-semibold leading-6 text-gray-900 text-center mb-6" id="modal-title">
               <slot name="title"></slot>
             </h3>
@@ -36,7 +36,7 @@
               <slot name="content"></slot>
             </div>
           </div>
-          <div class="border-t border-gray-200 px-4 py-4 bg-gray-50 rounded-b-lg">
+          <div class="px-4 py-4 rounded-b-lg">
             <slot name="footer"></slot>
           </div>
         </div>

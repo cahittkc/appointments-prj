@@ -29,8 +29,7 @@
 </template>
 
 <script setup lang="ts">
-import { CircleX, Search } from 'lucide-vue-next';
-import { ref, computed } from 'vue';
+import { CircleX } from 'lucide-vue-next';
 
 const props = withDefaults(defineProps<{
   isOpen: boolean
@@ -43,30 +42,9 @@ const props = withDefaults(defineProps<{
   contacts: () => []
 })
 
-const emit = defineEmits<{
-  (e: 'close'): void
-  (e: 'select-contact', contactId: string): void
-}>()
 
-const searchContactQuery = ref('')
 
-const availableContacts = computed(() => {
-  if (!searchContactQuery.value) return []
-  return props.contacts.filter(contact => {
-    const isNotSelected = !props.selectedContactIds.includes(contact.id)
-    const matchesSearch = (
-      contact.fields.contact_name.toLowerCase().includes(searchContactQuery.value.toLowerCase()) ||
-      contact.fields.contact_surname.toLowerCase().includes(searchContactQuery.value.toLowerCase()) ||
-      contact.fields.contact_email.toLowerCase().includes(searchContactQuery.value.toLowerCase())
-    )
-    return isNotSelected && matchesSearch
-  })
-})
 
-const addContactToUpdate = (contactId: string) => {
-  emit('select-contact', contactId)
-  searchContactQuery.value = ''
-}
 </script>
 
 <style scoped>

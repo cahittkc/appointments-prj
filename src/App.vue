@@ -14,7 +14,7 @@
                   @click="filterObj.agent_ids.includes(agent.id) ? filterObj.agent_ids = filterObj.agent_ids.filter((id : any) => id !== agent.id) : filterObj.agent_ids.push(agent.id)"
                   class="group w-10 h-10 rounded-full flex items-center justify-center cursor-pointer ring-2 ring-white relative"
                   :style="{ backgroundColor: agent.fields.color }"
-                  :class="{'!ring-3 !ring-green-500 transition-all': filterObj.agent_ids.includes(agent.id)}"
+                  :class="{'!ring-3 !ring-pink-500 transition-all': filterObj.agent_ids.includes(agent.id)}"
                   >
                   <div class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-800 text-white text-xs rounded-md opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
                     {{ agent.fields.agent_name }} {{ agent.fields.agent_surname }}
@@ -34,7 +34,7 @@
                   +{{ agents.length - 5 }}
                 </span>
               </div>
-              <div v-if="showAllAgents" class="absolute top-full left-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-[100] agents-dropdown">
+              <div v-if="showAllAgents" class="absolute top-full left-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-300 py-2 z-[100] agents-dropdown">
                 <div v-for="agent in agents.slice(5)" :key="agent.id" @click="filterObj.agent_ids.includes(agent.id) ? filterObj.agent_ids = filterObj.agent_ids.filter((id : any) => id !== agent.id) : filterObj.agent_ids.push(agent.id)" class="flex items-center gap-x-3 px-4 py-2 hover:bg-gray-50 cursor-pointer">
                   <div 
                     class="w-8 h-8 rounded-full flex items-center justify-center"
@@ -54,7 +54,7 @@
           </div>
 
           <div class="flex items-center gap-x-3">
-            <select v-model="filterObj.status"  class="w-[150px] h-[42px] bg-gray-50 border border-gray-200 rounded-lg text-xs px-3 focus:outline-none" name="" id="">
+            <select v-model="filterObj.status"  class="w-[150px] h-[42px] bg-white mt-[2px] border border-gray-300 rounded-lg text-xs px-3 focus:outline-none" name="" id="">
               <option :value="null">All Statuses</option>
               <option :value="'Cancelled'">Cancelled</option>
               <option :value="'Completed'">Completed</option>
@@ -69,9 +69,9 @@
 
 
         </div>
-        <div class="flex items-center group w-[300px]">
-          <input @input="filterAppointments" v-model="searchText" type="text" placeholder="Search..." class="w-full min-w-[220px] pl-10 pr-4 py-2.5 h-[42px] bg-gray-50 border border-gray-200 rounded-tl-lg rounded-bl-lg focus:outline-none" />
-          <div class="px-3 py-2.5 bg-gray-50 h-[42px] flex items-center justify-center border-2 border-gray-200 transition-all rounded-tr-lg rounded-br-lg  group-focus-within:border-pink-500">
+        <div class="flex items-center group w-[360px]">
+          <input @input="filterAppointments" v-model="searchText" type="text" placeholder="Search..." class="w-full placeholder:text-center text-xs min-w-[220px] pl-10 pr-4 py-2.5 h-[42px] bg-white border border-gray-300 rounded-tl-lg rounded-bl-lg focus:outline-none" />
+          <div class="px-3 py-2.5 bg-white h-[42px] flex items-center justify-center border-2 border-gray-300 transition-all rounded-tr-lg rounded-br-lg  group-focus-within:border-pink-500">
             <Search class="text--gray-500 w-4 h-4" />
           </div>
         </div>
@@ -83,11 +83,11 @@
         <div class="mb-4">
           <div class="grid grid-cols-2 gap-3">
             <div class="flex items-center group w-full relative">
-              <input @keydown.enter="filterAppointments" v-model="searchText" type="text" placeholder="Search appointments..." class="w-full pl-4 pr-12 py-3 h-[48px] bg-gray-50 border border-gray-200 rounded-lg text-xs focus:outline-none text-sm" />
+              <input @keydown.enter="filterAppointments" v-model="searchText" type="text" placeholder="Search appointments..." class="w-full pl-4 pr-12 py-3 h-[48px] bg-white border border-gray-300 rounded-lg text-xs focus:outline-none text-sm" />
               <Search class="absolute right-3 text-gray-500 w-4 h-4 z-10" />
             </div>
             <div>
-              <select v-model="filterObj.status" class="w-full h-[44px] text-xs bg-gray-50 border border-gray-200 rounded-lg  px-3 focus:outline-none focus:border-pink-500">
+              <select v-model="filterObj.status" class="w-full h-[44px] text-xs bg-white border border-gray-300 rounded-lg  px-3 focus:outline-none focus:border-pink-500">
                 <option :value="null">All Statuses</option>
                 <option :value="'Cancelled'">Cancelled</option>
                 <option :value="'Completed'">Completed</option>
@@ -191,7 +191,7 @@
           
           <!-- Appointments List -->
           <div v-else class="grid gap-3 px-2 md:px-2 max-md:px-2">
-            <div @click="selectAppointment(app)" v-for="(app,index) in paginatedAppointments" :key="app.id" :class="{'bg-gray-100': index % 2 === 0, 'animate-pulse border-green-500': newAppointmentIds.includes(app.id)}" class="cursor-pointer border border-gray-200 rounded-lg grid grid-cols-4 max-xl:grid-cols-2 max-md:grid-cols-1 gap-4 max-md:gap-3 shadow-sm py-4 max-md:py-3">
+            <div @click="selectAppointment(app)" v-for="(app,index) in paginatedAppointments" :key="app.id" :class="{'bg-[#f4fafa]': index % 2 === 0, 'animate-pulse border-green-500': newAppointmentIds.includes(app.id)}" class="cursor-pointer border border-gray-300 rounded-lg grid grid-cols-4 max-xl:grid-cols-2 max-md:grid-cols-1 gap-4 max-md:gap-3 shadow-sm py-4 max-md:py-3">
                 <div class="py-3 px-4 max-md:py-2 max-md:px-3 flex items-center">
                     <ContactInfo 
                       :contact-name="app.fields.contact_name"
@@ -237,7 +237,7 @@
                             +{{ app.fields.agent_id?.length - 2 }}
                           </span>
                         </div>
-                        <div v-if="showAgentListForAppointment[app.id]" class="absolute top-full -left-[130px] max-md:left-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-[100]" data-appointment-dropdown :data-appointment-id="app.id">
+                        <div v-if="showAgentListForAppointment[app.id]" class="absolute top-full -left-[130px] max-md:left-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-300 py-2 z-[100]" data-appointment-dropdown :data-appointment-id="app.id">
                           <div @click="(e) => {e.stopPropagation();}" v-for="agentId in app.fields.agent_id.slice(2)" :key="agentId" class="flex items-center gap-x-3 px-4 py-2 hover:bg-gray-50">
                             <div 
                               class="w-8 h-8 rounded-full flex items-center justify-center"
@@ -344,11 +344,10 @@
     <template #content>
         <div class="flex flex-col gap-y-6 mt-6">
           <div class="relative">
-
-            <div class="flex flex-col gap-y-1">
-              <div class="flex items-center group w-full">
-                <input :class="{'!border-red-600 border' : v$.createAppointmentForm.contact_id.$errors.length > 0}" v-model="searchContactQuery" type="text" placeholder="Search..." class="w-full pl-10 pr-4 py-2.5 h-[42px] bg-gray-50 border border-gray-200 rounded-tl-lg rounded-bl-lg focus:outline-none" />
-                <div class="px-3 py-2.5 bg-black h-[42px] flex items-center justify-center border border-gray-200 transition-all rounded-tr-lg rounded-br-lg">
+            <div v-if="createAppointmentForm.contact_id.length === 0" class="flex flex-col gap-y-1">
+              <div class="flex items-center group  w-full">
+                <input :class="{'!border-red-600 border' : v$.createAppointmentForm.contact_id.$errors.length > 0}" v-model="searchContactQuery" type="text" placeholder="Search..." class="w-full pl-10 pr-4 py-2.5 h-[42px] text-xs bg-white border border-gray-300 rounded-tl-lg rounded-bl-lg placeholder:text-center focus:outline-none" />
+                <div class="px-3 py-2.5 bg-black h-[42px] flex items-center justify-center border border-gray-300 transition-all rounded-tr-lg rounded-br-lg">
                   <Search class="text-white w-4 h-4" />
                 </div>
               </div>
@@ -358,17 +357,24 @@
             </div>
 
             <!-- Selected Contacts -->
-            <div v-if="createAppointmentForm.contact_id.length > 0" class="flex flex-wrap gap-2 mt-2">
-              <div v-for="contactId in createAppointmentForm.contact_id" :key="contactId" class="flex items-center gap-x-1 bg-gray-100 px-2 py-1 rounded-full text-xs">
-                <span>{{ getContactName(contactId) }}</span>
-                <X class="w-3 h-3 cursor-pointer" @click="removeContact(contactId)" />
-              </div>
-              
+            <div class="max-h-60 overflow-y-auto flex flex-col gap-y-2.5" >
+              <template v-for="c in createAppointmentForm.contact_id">
+                <div class="flex flex-col gap-y-2 flex-1 items-start bg-white border border-gray-300 rounded-lg p-4 relative">
+                    <ContactInfo 
+                      :contact-name="getContactField(c, 'contact_name')"
+                      :contact-surname="getContactField(c, 'contact_surname')"
+                      :contact-email="getContactField(c, 'contact_email')"
+                      :contact-phone="getContactField(c, 'contact_phone')"
+                      container-class=""
+                    />
+                    <X @click="removeContactFromCreateAppointment(c)" class="absolute right-2 top-2  text-gray-500 w-4 h-4 cursor-pointer" />                     
+                </div>
+              </template>
             </div>
 
             <!-- Search Results -->
-            <div v-if="searchContactQuery && filteredContacts.length > 0" class="absolute w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-60 overflow-y-auto">
-              <div v-for="contact in filteredContacts" :key="contact.id" @click="selectContact(contact.id)" class="flex items-center gap-x-2 px-4 py-2 hover:bg-gray-50 cursor-pointer">
+            <div v-if="searchContactQuery && availableContacts.length > 0" class="absolute w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg z-50 max-h-60 overflow-y-auto">
+              <div v-for="contact in availableContacts" :key="contact.id" @click="selectContact(contact.id)" class="flex items-center gap-x-2 px-4 py-2 hover:bg-gray-50 cursor-pointer">
                 <div class="flex flex-col">
                   <span class="text-sm">{{ contact.fields.contact_name }} {{ contact.fields.contact_surname }}</span>
                   <span class="text-xs text-gray-500">{{ contact.fields.contact_email }}</span>
@@ -376,10 +382,8 @@
               </div>
             </div>
           </div>
-
-
           <div class="flex flex-col gap-y-1">
-            <div :class="{'!border-red-600 border' : v$.createAppointmentForm.appointment_address.$errors.length > 0}" class="flex items-center h-[42px] bg-gray-50 border border-gray-200 rounded-sm w-full relative">
+            <div :class="{'!border-red-600 border' : v$.createAppointmentForm.appointment_address.$errors.length > 0}" class="flex items-center h-[42px] bg-white border border-gray-300 rounded-sm w-full relative">
               <span v-if="createAppointmentForm.appointment_address === ''" class="text-xs text-gray-500 absolute top-[11px] -translate-y-1/2 left-3">Address</span>
               <input :class="{'!pl-4' : createAppointmentForm.appointment_address !== ''}" v-model="createAppointmentForm.appointment_address" type="text"  class="w-full pl-10 pr-4 py-2.5 h-[42px] text-xs outline-0 pt-4" />
               <House class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 w-4 h-4" />
@@ -388,7 +392,6 @@
                 <span v-if="v$.createAppointmentForm.appointment_address.$errors" class="text-[11px] text-red-500"> Address is required </span>
             </div>
           </div>
-
           <AgentDropdown
             :agents="agents"
             :selected-agent-ids="createAppointmentForm.agent_id"
@@ -399,14 +402,10 @@
           />
 
           <div class="modal relative">
-            <VueDatePicker auto-apply :clearable="false" :min-date="new Date()"  format="dd/MM/yyyy HH:mm" v-model="createAppointmentForm.appointment_date" class="w-[240px] text-xs before:content-['Appointment_Date'] before:absolute before:top-0.5 before:left-3 before:text-[11px] before:z-10  before:text-gray-500" name="" id="" />
+            <VueDatePicker :teleport="true" auto-apply :clearable="false" :min-date="new Date()"  format="dd/MM/yyyy HH:mm" v-model="createAppointmentForm.appointment_date" class="w-[240px] text-xs before:content-['Appointment_Date'] before:absolute before:top-0.5 before:left-3 before:text-[11px] before:z-10  before:text-gray-500" name="" id="" />
           </div>
-
-
         </div>
     </template>
-
-
     <template #footer>
       <div class="flex justify-end gap-x-2">
         <button  @click="closeCreateAppointmentModal" class="px-4 py-2 text-sm font-medium  bg-black text-white border border-gray-300 rounded-md shadow-sm  focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500">Cancel</button>
@@ -416,8 +415,6 @@
         </button>
       </div>
     </template>
-
-
   </BaseModal>
 
 
@@ -432,13 +429,12 @@
 
     <template #content>
       <div class="flex flex-col gap-y-2.5">
-              <div v-if="!addContactModalShow && selectedAppointment.contact_id.length === 0" @click="addContactModalShow = true" class="flex cursor-pointer gap-y-2 flex-1 items-center justify-center border border-dashed border-gray-300 rounded-lg p-4 min-h-[110px] relative">
-                  <UserPlus2 class="w-5 h-5 text-gray-300" />            
+              <div v-if="!addContactModalShow && selectedAppointment.contact_id.length === 0" @click="addContactModalShow = true" class="flex cursor-pointer bg-white gap-y-2 flex-1 items-center justify-center border border-dashed border-gray-300 rounded-lg p-4 min-h-[98px] relative">
+                  <UserPlus2 class="w-5 h-5 text-gray-500" />            
               </div>
-              <UserPlus2 v-if="!addContactModalShow && selectedAppointment.contact_id.length > 0" @click="addContactModalShow = true"  class="w-5 h-5 text-gray-500 mb-2 cursor-pointer flex items-center justify-end ml-auto" />
               <div class="max-h-60 overflow-y-auto flex flex-col gap-y-2.5" >
                 <template v-for="c in selectedAppointment.contact_id">
-                  <div class="flex flex-col gap-y-2 flex-1 items-start border border-gray-300 rounded-lg p-4 relative">
+                  <div class="flex flex-col gap-y-2 flex-1 items-start bg-white border border-gray-300 rounded-lg p-4 relative">
                       <ContactInfo 
                         :contact-name="getContactField(c, 'contact_name')"
                         :contact-surname="getContactField(c, 'contact_surname')"
@@ -453,8 +449,6 @@
               <div class="-mt-5" v-for="error of v$.selectedAppointment.contact_id.$errors" :key="error.$uid">
                 <span v-if="v$.selectedAppointment.contact_id.$errors" class="text-[11px] text-red-500">   At least one person must be added  </span>
               </div>
-
-
               <AddContactModal 
                 :is-open="addContactModalShow" 
                 @close="addContactModalShow = false"
@@ -471,12 +465,12 @@
                   <div class="flex flex-col gap-y-6 mt-6">
                     <div class="relative">
                       <div class="flex items-center group w-full">
-                        <input v-model="searchContactQuery" type="text" placeholder="Search..." class="w-full pl-10 pr-4 py-2.5 h-[42px] bg-gray-50 border border-gray-200 rounded-tl-lg rounded-bl-lg focus:outline-none" />
-                        <div class="px-3 py-2.5 bg-black h-[42px] flex items-center justify-center border border-gray-200 transition-all rounded-tr-lg rounded-br-lg">
+                        <input v-model="searchContactQuery" type="text" placeholder="Search..." class="w-full pl-10 pr-4 py-2.5 h-[42px] bg-gray-50 border border-gray-300 rounded-tl-lg rounded-bl-lg focus:outline-none" />
+                        <div class="px-3 py-2.5 bg-black h-[42px] flex items-center justify-center border border-gray-300 transition-all rounded-tr-lg rounded-br-lg">
                           <Search class="text-white w-4 h-4" />
                         </div>
                       </div>
-                      <div v-if="searchContactQuery && availableContacts.length > 0" class="absolute w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-60 overflow-y-auto">
+                      <div v-if="searchContactQuery && availableContacts.length > 0" class="absolute w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg z-50 max-h-60 overflow-y-auto">
                         <div v-for="contact in availableContacts" :key="contact.id" @click="addContactToUpdate(contact.id)" class="flex items-center gap-x-2 px-4 py-2 hover:bg-gray-50 cursor-pointer">
                           <div class="flex flex-col text-left">
                             <span class="text-sm">{{ contact.fields.contact_name }} {{ contact.fields.contact_surname }}</span>
@@ -488,8 +482,10 @@
                   </div>
                 </template>
               </AddContactModal>
+
+              
               <div class="flex flex-col gap-y-0.5">
-                <div :class="{'border-red-600': v$.selectedAppointment.appointment_address.$errors.length > 0}" v-if="!addContactModalShow" class="flex items-center h-[42px] bg-white border border-gray-200 rounded-sm w-full relative">
+                <div :class="{'border-red-600': v$.selectedAppointment.appointment_address.$errors.length > 0}" v-if="!addContactModalShow" class="flex items-center h-[42px] bg-white border border-gray-300 rounded-sm w-full relative">
                   <span v-if="selectedAppointment.appointment_address == ''" class="text-xs text-gray-500 absolute top-[11px] -translate-y-1/2 left-3">Address</span>
                   <input :class="{'pt-4 !pl-10' : selectedAppointment.appointment_address == ''}" v-model="selectedAppointment.appointment_address" type="text"  class="w-full pl-4 pr-4 py-2.5 h-[42px] text-xs outline-0" />
                   <X @click="selectedAppointment.appointment_address = ''" class="absolute right-3 top-2 cursor-pointer text-gray-500 w-4 h-4" />
@@ -510,10 +506,10 @@
               />
 
               <div v-if="!addContactModalShow" class="modal relative">
-                <VueDatePicker auto-apply :clearable="false" :min-date="new Date()"  format="dd/MM/yyyy HH:mm" v-model="selectedAppointment.appointment_date" class="w-[240px] text-xs before:content-['Appointment_Date'] before:absolute before:top-0.5 before:left-3 before:text-[11px] before:z-10  before:text-gray-500" name="" id="" />
+                <VueDatePicker :teleport="true" auto-apply :clearable="false" :min-date="new Date()"  format="dd/MM/yyyy HH:mm" v-model="selectedAppointment.appointment_date" class="w-[240px] text-xs before:content-['Appointment_Date'] before:absolute before:top-0.5 before:left-3 before:text-[11px] before:z-10  before:text-gray-500" name="" id="" />
               </div>
 
-              <div v-if="!addContactModalShow" class="flex items-center h-[42px] bg-white border border-gray-200 rounded-sm w-full relative">
+              <div v-if="!addContactModalShow" class="flex items-center h-[42px] bg-white border border-gray-300 rounded-sm w-full relative">
                 <select v-model="selectedAppointment.is_cancelled" class="w-full pl-4 pr-4 py-2.5 h-[42px] text-xs outline-0 bg-transparent appearance-none cursor-pointer">
                   <template v-if="new Date(selectedAppointment.appointment_date) > new Date()">
                     <option :value="false">Upcoming</option>
@@ -532,8 +528,8 @@
                 <h4 class="text-sm font-medium text-gray-700 mb-2">Related Appointments</h4>
                 <div class="overflow-y-auto max-h-[188px] space-y-2">
                   <template v-for="contactId in selectedAppointment.contact_id" :key="contactId">
-                    <div v-for="relatedApp in getContactOtherAppointments(contactId)" :key="relatedApp.id" @click="selectAppointmentForRelated(relatedApp)" class="flex items-center justify-between gap-4 p-4 bg-white rounded-lg border border-gray-200 cursor-pointer">
-                      <div class="flex flex-col gap-1 flex-1">
+                    <div v-for="relatedApp in getContactOtherAppointments(contactId)" :key="relatedApp.id" @click="selectAppointmentForRelated(relatedApp)" class="flex sm:items-center max-sm:flex-col max-sm:gap-y-2 justify-between gap-4 p-4 bg-white rounded-lg border border-gray-300 cursor-pointer">
+                      <div class="flex flex-col gap-1 max-md:gap-y-3 flex-1">
                         <div class="text-sm font-medium text-gray-900 flex gap-x-2 items-center">
                           <House class="w-4 h-4 min-w-4 min-h-4 flex-shrink-0 text-gray-500" />
                           <span>{{ relatedApp.fields.appointment_address }}</span>
@@ -570,16 +566,13 @@
                   </template>
                 </div>
               </div>
-
-              
-
         </div>
     </template>
 
 
     <template #footer>
-      <div class="flex justify-end gap-x-2">
-        <button  @click="closeUpdateModal" class="px-4 py-2 text-sm font-medium text-black  border border-gray-300 rounded-md shadow-sm  focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500">Close</button>
+      <div class="flex justify-end gap-x-2 mt-auto">
+        <button  @click="closeUpdateModal" class="px-4 py-2 text-sm font-medium text-black bg-white border border-gray-300 rounded-md shadow-sm  focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500">Close</button>
         <button @click="updateAppointment" :disabled="updateIsLoading" class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-pink-500 border border-transparent rounded-md shadow-sm hover:bg-pink-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 disabled:opacity-50 disabled:cursor-not-allowed">
           <Loader2 v-if="updateIsLoading" class="w-4 h-4 mr-2 -ml-1 animate-spin" />
           Save
@@ -670,6 +663,14 @@ export default {
         agent_id: [],
         is_cancelled: false,
       } as editAppointmentForm,
+      originalAppointment: {
+        id: '',
+        appointment_date: '',
+        appointment_address: '',
+        contact_id: [],
+        agent_id: [],
+        is_cancelled: false,
+      } as editAppointmentForm,
       updateModal: false,
       createAppointmentForm: {
         appointment_date: new Date(),
@@ -710,28 +711,34 @@ export default {
   },
   computed: {
     availableContacts() {
-      const contactIds = Array.isArray(this.selectedAppointment.contact_id) ? this.selectedAppointment.contact_id : [this.selectedAppointment.contact_id]
-      return this.contacts.filter(contact => !contactIds.includes(contact.id))
+      // For create appointment modal, use createAppointmentForm.contact_id
+      // For update appointment modal, use selectedAppointment.contact_id
+      const selectedContactIds = this.createAppointmentModalShow 
+        ? this.createAppointmentForm.contact_id 
+        : (Array.isArray(this.selectedAppointment.contact_id) ? this.selectedAppointment.contact_id : [this.selectedAppointment.contact_id])
+      
+      let filteredContacts = this.contacts.filter(contact => !selectedContactIds.includes(contact.id))
+      
+      // Filter by search query if exists
+      if (this.searchContactQuery) {
+        const query = this.searchContactQuery.toLowerCase()
+        filteredContacts = filteredContacts.filter(contact => {
+          return (
+            contact.fields.contact_name.toLowerCase().includes(query) ||
+            contact.fields.contact_surname.toLowerCase().includes(query) ||
+            contact.fields.contact_email.toLowerCase().includes(query)
+          )
+        })
+      }
+      
+      return filteredContacts
     },
     paginatedAppointments() {
       const start = (this.currentPage - 1) * this.itemsPerPage
       const end = start + this.itemsPerPage
       return this.appointments.slice(start, end)
     },
-    filteredContacts() {
-      if (!this.searchContactQuery) return []
-      const query = this.searchContactQuery.toLowerCase()
-      return this.contacts.filter(contact => {
-        // Skip if already selected
-        if (this.createAppointmentForm.contact_id.includes(contact.id)) return false
-        
-        return (
-          contact.fields.contact_name.toLowerCase().includes(query) ||
-          contact.fields.contact_surname.toLowerCase().includes(query) ||
-          contact.fields.contact_email.toLowerCase().includes(query)
-        )
-      })
-    },
+
     totalPages() {
       return Math.ceil(this.appointments.length / this.itemsPerPage)
     },
@@ -808,6 +815,12 @@ export default {
       this.selectedAppointment.contact_id.push(contactId)
       this.addContactModalShow = false
     },
+    removeContactFromCreateAppointment(contactId: string) {
+      const index = this.createAppointmentForm.contact_id.indexOf(contactId)
+      if (index > -1) {
+        this.createAppointmentForm.contact_id.splice(index, 1)
+      }
+    },
     toggleUpdateModal() {
       this.isLoading = true
       this.updateModal = false
@@ -819,15 +832,19 @@ export default {
     selectAppointment(appointment: Appointment) {
       const currentStatus = this.appointmentStatus(appointment.fields.is_cancelled, appointment.fields.appointment_date)
       
-      this.selectedAppointment = {
+      const appointmentData = {
         id: appointment.id,
         appointment_date: appointment.fields.appointment_date,
         appointment_address: appointment.fields.appointment_address,
-        contact_id: appointment.fields.contact_id,
+        contact_id: Array.isArray(appointment.fields.contact_id) ? [...appointment.fields.contact_id] : [appointment.fields.contact_id],
         agent_id: Array.isArray(appointment.fields.agent_id) ? [...appointment.fields.agent_id].filter(id => id !== undefined && id !== null) : [appointment.fields.agent_id].filter(id => id !== undefined && id !== null),
         is_cancelled: currentStatus === 'Cancelled',
         status: currentStatus
       }
+      
+      // Save original data for reset functionality
+      this.originalAppointment = JSON.parse(JSON.stringify(appointmentData))
+      this.selectedAppointment = appointmentData
       this.updateModal = true
     },
     selectAppointmentForRelated(relatedApp: Appointment){
@@ -858,6 +875,19 @@ export default {
       }, 300);
     },
     closeUpdateModal() {
+      // Reset to original appointment data if it exists
+      if (this.originalAppointment.id) {
+        this.selectedAppointment = JSON.parse(JSON.stringify(this.originalAppointment))
+      } else {
+        this.selectedAppointment = {
+          id: '',
+          appointment_date: '',
+          appointment_address: '',
+          contact_id: [],
+          agent_id: [],
+          is_cancelled: false,
+        }
+      }
       this.searchContactQuery = ''
       this.v$.$reset();
       this.updateModal = false
@@ -904,6 +934,9 @@ export default {
           if (withoutFilterIndex !== -1) {
             this.withOutFilterAppointments[withoutFilterIndex] = updatedAppointment
           }
+          
+          // Update original appointment data after successful update
+          this.originalAppointment = JSON.parse(JSON.stringify(this.selectedAppointment))
           
           this.closeUpdateModal()
           toast.success("Appointment updated successfully")

@@ -1,10 +1,10 @@
 <template>
   <div 
     :class="{'border-red-500' : hasError, 'border-gray-200' : !hasError}" 
-    class="relative bg-gray-50 border rounded-sm" 
+    class="relative bg-white border rounded-sm" 
     @click.stop="toggleDropdown"
   >
-    <div class="flex items-center h-[42px] w-full relative cursor-pointer max-w-[448px]">
+    <div class="flex items-center h-[42px] w-full  cursor-pointer max-w-[448px]">
       <span 
         v-if="selectedAgentIds.length === 0" 
         class="text-xs text-gray-500 absolute top-[11px] -translate-y-1/2 left-3"
@@ -17,7 +17,7 @@
       >
         {{ displayText }}
       </div>
-      <ChevronDown class="absolute right-0 top-1/2 -translate-y-1/2 text-gray-500 w-4 h-4" />
+      <ChevronDown class="absolute right-2 top-5 -translate-y-1/2 text-gray-500 w-4 h-4" />
     </div>
 
     <div v-if="hasError" class="px-3 pb-2">
