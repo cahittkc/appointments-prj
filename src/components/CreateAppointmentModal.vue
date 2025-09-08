@@ -115,16 +115,6 @@ export default {
     isOpen: {
       type: Boolean,
       default: false
-    },
-    agents: {
-      type: Array,
-      required: true,
-      default: () => []
-    },
-    contacts: {
-      type: Array,
-      required: true,
-      default: () => []
     }
   },
   emits: ['close', 'appointment-created'],
@@ -142,6 +132,12 @@ export default {
     }
   },
   computed: {
+    agents() {
+      return this.$store.state.agents.agents
+    },
+    contacts() {
+      return this.$store.state.contacts.contacts
+    },
     availableContacts() {
       if (!this.searchContactQuery) return []
       

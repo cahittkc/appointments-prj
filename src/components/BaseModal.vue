@@ -1,40 +1,36 @@
 <template>
   <Transition name="modal">
-    <div v-if="isOpen" :class="`fixed inset-0 z-${zIndex} overflow-y-auto`" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+    <div v-if="isOpen" :class="`fixed inset-0 z-${zIndex}`" aria-labelledby="modal-title" role="dialog" aria-modal="true">
       <!-- Desktop Layout -->
       <div class="hidden sm:flex min-h-screen items-center justify-center p-4 text-center">
         <div class="fixed inset-0 bg-gray-50/50 transition-opacity" aria-hidden="true"></div>
 
-        <div class="relative flex flex-col min-h-[500px] transform rounded-lg bg-[#f4fafa] text-left shadow-xl transition-all my-8 w-full max-w-lg">
-          <div class=" px-6 pb-4 pt-5">
-            <div class="flex items-start">
-              <div class="mt-3 text-left w-full">
-                <h3 class="text-base font-semibold leading-6 text-gray-900 flex items-center justify-center" id="modal-title">
-                  <slot name="title"></slot>
-                </h3>
-                <div class="mt-4">
-                  <slot name="content"></slot>
-                </div>
-              </div>
-            </div>
+        <div class="relative flex flex-col min-h-[500px] max-h-[80vh] transform rounded-lg bg-[#f4fafa] text-left shadow-xl transition-all my-8 w-full max-w-lg">
+          <div class="px-6 pb-4 pt-5 flex-shrink-0">
+            <h3 class="text-base font-semibold leading-6 text-gray-900 flex items-center justify-center" id="modal-title">
+              <slot name="title"></slot>
+            </h3>
           </div>
-          <div class="flex items-center justify-end px-6 py-3 flex-row-reverse mt-auto ml-auto">
+          <div class="flex-1 overflow-y-auto px-6 min-h-[600px]">
+            <slot name="content"></slot>
+          </div>
+          <div class="flex items-center justify-end px-2 py-3  mt-auto">
             <slot name="footer"></slot>
           </div>
         </div>
       </div>
 
       <!-- Mobile Layout -->
-      <div class="sm:hidden fixed inset-0 flex items-start justify-center p-2 pt-10 overflow-y-auto">
+      <div class="sm:hidden fixed inset-0 flex items-start justify-center p-2 top-1/2 -translate-y-1/2">
         <div class="fixed inset-0 bg-gray-50/50 transition-opacity" aria-hidden="true"></div>
-        <div class="relative bg-[#f4fafa] rounded-lg shadow-xl w-full  flex flex-col">
-          <div class="flex-1 px-2 py-6">
-            <h3 class="text-lg font-semibold leading-6 text-gray-900 text-center mb-6 flex items-center justify-center" id="modal-title">
+        <div class="relative bg-[#f4fafa] rounded-lg shadow-xl w-full max-h-[90vh] flex flex-col">
+          <div class="px-2 pt-6 flex-shrink-0">
+            <h3 class="text-lg font-semibold leading-6 text-gray-900 text-center  flex items-center justify-center" id="modal-title">
               <slot name="title"></slot>
             </h3>
-            <div>
-              <slot name="content"></slot>
-            </div>
+          </div>
+          <div class="flex-1 overflow-y-auto px-2">
+            <slot name="content"></slot>
           </div>
           <div class="px-4 py-4 rounded-b-lg">
             <slot name="footer"></slot>

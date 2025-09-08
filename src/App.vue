@@ -63,8 +63,12 @@
           </div>
 
           <div class="flex items-center gap-x-1.5">
-              <VueDatePicker auto-apply :clearable="false" format="dd/MM/yyyy HH:mm" v-model="filterObj.startDate" @change="filterAppointments" class="w-[240px] text-xs before:content-['From'] before:absolute before:top-0.5 before:left-3 before:text-[11px] before:z-10 before:font-semibold before:text-gray-500" name="" id="" />
-              <VueDatePicker auto-apply :clearable="false" format="dd/MM/yyyy HH:mm" v-model="filterObj.endDate" @change="filterAppointments" class="w-[240px] text-xs before:content-['To'] before:absolute before:top-0.5 before:left-3 before:text-[11px] before:z-10 before:font-semibold before:text-gray-500" name="" id="" />
+              <div class="relative">
+                <VueDatePicker auto-apply :clearable="false" format="dd/MM/yyyy HH:mm" v-model="filterObj.startDate" @change="filterAppointments" class="w-[240px] text-xs before:content-['From'] before:absolute before:top-0.5 before:left-3 before:text-[11px] before:z-10 before:font-semibold before:text-gray-500" name="" id="" />
+              </div>
+              <div class="relative">
+                <VueDatePicker auto-apply :clearable="false" format="dd/MM/yyyy HH:mm" v-model="filterObj.endDate" @change="filterAppointments" class="w-[240px] text-xs before:content-['To'] before:absolute before:top-0.5 before:left-3 before:text-[11px] before:z-10 before:font-semibold before:text-gray-500" name="" id="" />
+              </div>
           </div>
 
 
@@ -101,10 +105,10 @@
         <div class="space-y-3">
           <!-- Date Range -->
           <div class="grid grid-cols-2 gap-3">
-            <div class="modal">
+            <div class="modal relative">
                <VueDatePicker auto-apply :clearable="false" format="dd/MM/yyyy HH:mm" v-model="filterObj.startDate" @change="filterAppointments" class="w-[240px] text-xs before:content-['From'] before:absolute before:top-0.5 before:left-3 before:text-[11px] before:z-10 before:font-semibold before:text-gray-500" name="" id="" />
             </div>
-            <div class="modal">
+            <div class="modal relative">
               <VueDatePicker auto-apply :clearable="false" format="dd/MM/yyyy HH:mm" v-model="filterObj.endDate" @change="filterAppointments" class="w-[240px] text-xs before:content-['To'] before:absolute before:top-0.5 before:left-3 before:text-[11px] before:z-10 before:font-semibold before:text-gray-500" name="" id="" />
             </div>
           </div>
@@ -136,10 +140,10 @@
       <!-- Section new appoinment -->
       <!-- Desktop Header -->
       <div class="hidden lg:flex items-center justify-between pt-8 px-3">
-        <span class="text-sm text-gray-600">{{ withOutFilterAppointments.length }} Appointments found. </span>
+        <span class="text-sm text-gray-600">{{ appointments.length }} Appointments found. </span>
         <div v-if="newAppointmentIds.length > 0" class="flex items-center gap-x-2 text-sm text-green-600 animate-pulse">
           <CheckCircle class="w-5 h-5" />
-          New appointment added! The list will be sorted by date in 7 seconds.
+          New appointment added! The list will be sorted by date in 10 seconds.
         </div>
         <button @click="openCreateModal" class="px-4 cursor-pointer py-2 bg-pink-500 text-white flex items-center justify-between rounded-md gap-x-2.5">
           <CirclePlusIcon class="w-5 h-5 font-light" />
@@ -151,21 +155,29 @@
       <div class="lg:hidden pt-6 px-3 space-y-3">
         <div v-if="newAppointmentIds.length > 0" class="flex items-center justify-center gap-x-2 text-sm text-green-600 animate-pulse">
           <CheckCircle class="w-5 h-5" />
-          New appointment added! The list will be sorted by date in 7 seconds.
+          New appointment added! The list will be sorted by date in 10 seconds.
         </div>
         <div class="flex items-center justify-between">
           <span class="text-xs text-gray-400">{{ filteredAppointments.length }} found</span>
           <button @click="openCreateModal" class="px-3 py-2 bg-pink-500 text-white flex items-center rounded-md gap-x-2">
             <CirclePlusIcon class="w-4 h-4" />
-            <span class="text-sm">New</span>
+            <span class="text-sm">Create Appointment</span>
           </button>
         </div>
       </div>
 
       <!-- Section appointment list -->
       <div class="w-full overflow-hidden py-8 animate-fade-up" :class="{ 'animate-fade-up-active': isPageLoaded }">
+          <!-- Loading State -->
+          <div v-if="isFiltering" class="flex items-center justify-center py-8">
+            <div class="flex items-center gap-3 text-pink-500 min-h-[calc(100vh-400px)]">
+              <Loader2 class="w-6 h-6 animate-spin" />
+              <span class="text-sm font-medium">Filtreleniyor...</span>
+            </div>
+          </div>
+          
           <!-- Empty State -->
-          <div v-if="paginatedAppointments.length === 0" class="flex flex-col items-center justify-center py-8 md:py-16 px-4">
+          <div v-if="!isFiltering && paginatedAppointments.length === 0" class="flex flex-col items-center justify-center py-8 md:py-16 px-4">
             <div class="mb-4 md:mb-6">
               <Vue3Lottie 
                 :animationData="emptyCalendarAnimation" 
@@ -187,7 +199,7 @@
           </div>
           
           <!-- Appointments List -->
-          <div v-else class="grid gap-3 px-2 md:px-2 max-md:px-2">
+          <div v-else-if="!isFiltering" class="grid gap-3 px-2 md:px-2 max-md:px-2">
             <div @click="selectAppointment(app)" v-for="(app,index) in paginatedAppointments" :key="app.id" :class="{'bg-[#f4fafa]': index % 2 === 0, 'animate-pulse border-green-500': newAppointmentIds.includes(app.id)}" class="cursor-pointer border border-gray-300 rounded-lg grid grid-cols-4 max-xl:grid-cols-2 max-md:grid-cols-1 gap-4 max-md:gap-3 shadow-sm py-4 max-md:py-3">
                 <div class="py-3 px-4 max-md:py-2 max-md:px-3 flex items-center">
                     <ContactInfo 
@@ -332,8 +344,6 @@
   <!--Create Appoinment Modal-->
   <CreateAppointmentModal 
     :isOpen="createAppointmentModalShow" 
-    :agents="agents" 
-    :contacts="contacts" 
     @close="closeCreateAppointmentModal" 
     @appointment-created="handleAppointmentCreated"
   />
@@ -342,9 +352,6 @@
    <!--Update Appoinment Modal-->
   <UpdateAppointmentModal
     :is-open="updateModal"
-    :agents="agents"
-    :contacts="contacts"
-    :appointments="withOutFilterAppointments"
     :selected-appointment="selectedAppointment"
     @close="closeUpdateModal"
     @appointment-updated="handleAppointmentUpdated"
@@ -356,7 +363,6 @@
 
 <script lang="ts">
 import { Agent, Appointment, Contact, editAppointmentForm } from '@/models'
-import { apiService } from '@/service/axiosService'
 import { useToast } from 'vue-toastification'
 import { User, Mail, Phone, House, Search, Check, ChevronLeft, ChevronRightIcon, CirclePlusIcon, CalendarPlus2, ChevronDown, X, Loader2, UserPlus2, CheckCircle } from 'lucide-vue-next';
 import VueDatePicker from '@vuepic/vue-datepicker';
@@ -369,6 +375,7 @@ import ContactInfo from './components/ContactInfo.vue';
 import CreateAppointmentModal from './components/CreateAppointmentModal.vue'
 import UpdateAppointmentModal from './components/UpdateAppointmentModal.vue'
 import moment from 'moment';
+// Vuex store will be accessed via this.$store
 
 const toast = useToast()
 
@@ -402,13 +409,9 @@ export default {
     return {
       emptyCalendarAnimation: Calendar,
       newAppointmentIds: [] as string[],
-      withOutFilterAppointments: [] as Appointment[],
-      agents: [] as Agent[],
-      contacts: [] as Contact[],
       showAllAgents: false,
       showAgentListForAppointment: {} as Record<string, boolean>,
       searchText: '',
-      isLoading: false,
       createAppointmentModalShow: false,
       selectedAppointment: {
         id: '',
@@ -423,29 +426,45 @@ export default {
       itemsPerPage: 10,
       filterObj: {
         agent_ids : [] as string[],
-        status: null,
+        status: null as string | null,
         startDate: new Date(new Date().setMonth(new Date().getMonth() - 1)).setHours(9, 0, 0, 0),
         endDate: new Date().setHours(18, 0, 0, 0)
       },
-      isPageLoaded: false
+      isPageLoaded: false,
+      isFiltering: false
     }
   },
 
   computed: {
+    agents() {
+      return this.$store.state.agents.agents
+    },
+    contacts() {
+      return this.$store.state.contacts.contacts
+    },
+    appointments() {
+      return this.$store.state.appointments.appointments
+    },
+    isLoading() {
+      return this.$store.state.agents.isLoading || this.$store.state.contacts.isLoading || this.$store.state.appointments.isLoading
+    },
     // Computed property for filtered appointments
     filteredAppointments() {
       const { status, startDate, endDate, agent_ids } = this.filterObj
       const searchQuery = this.searchText.toLowerCase()
       
       // Optimize filtering process - apply all filters in a single pass
-      return this.withOutFilterAppointments.filter(app => {
+      return this.appointments.filter((app: Appointment) => {
         // Always show newly added appointments (for animation)
         if (this.newAppointmentIds.includes(app.id)) {
           return true
         }
         // Status filter
-        if (status !== null && app.fields.status !== status) {
-          return false
+        if (status !== null && typeof status === 'string') {
+          const currentStatus = this.appointmentStatus(app.fields.is_cancelled, app.fields.appointment_date)
+          if (currentStatus.toLowerCase() !== status.toLowerCase()) {
+            return false
+          }
         }
         
         // Date range filter
@@ -615,17 +634,16 @@ export default {
       this.updateModal = false
     },
     getAgentName(agentId: string) {
-      const agent = this.agents.find(a => a.id === agentId)
+      const agent = this.agents.find((a: Agent) => a.id === agentId)
       return agent ? `${agent.fields.agent_name} ${agent.fields.agent_surname}` : ''
     },
     closeCreateAppointmentModal() {
       this.createAppointmentModalShow = false
     },
-    handleAppointmentCreated(appointment: Appointment) {
+    async handleAppointmentCreated(appointment: Appointment) {
       console.log('New appointment created:', appointment)
-      // First add the new appointment to the list
-      this.withOutFilterAppointments.unshift(appointment)
-      this.processAllAppointmentData()
+      // Add appointment through store action
+      await this.$store.dispatch('appointments/addAppointment', appointment)
       this.newAppointmentIds = [appointment.id]
       console.log('New appointment IDs:', this.newAppointmentIds)
       
@@ -636,46 +654,27 @@ export default {
         behavior: 'smooth'
       })
       
-      // Run filtering process after 7 seconds
+      // Run filtering process after 10 seconds
       setTimeout(() => {
         console.log('Processing appointment data and applying filters after 7 seconds')
-        this.processAllAppointmentData()
         this.filterAppointments()
         this.newAppointmentIds = []
         console.log('Animation ended, data processed and filtered')
-      }, 7000)
+      }, 10000)
     },
     
-    handleAppointmentUpdated(appointment: Appointment) {
-      const index = this.withOutFilterAppointments.findIndex(a => a.id === appointment.id)
-      if (index !== -1) {
-        this.withOutFilterAppointments[index] = appointment
-      }
+    async handleAppointmentUpdated(appointment: Appointment) {
+      // Update appointment through store action
+      await this.$store.dispatch('appointments/updateAppointment', appointment)
       this.closeUpdateModal()
       toast.success("Appointment updated successfully")
     },
     openCreateModal() {
       this.createAppointmentModalShow = true
     },
-    processAppointmentData(records: any[]) {
-      const sortedData = records.sort((a, b) => {
-        return moment(b.fields.appointment_date).diff(moment(a.fields.appointment_date))
-      })
 
-      return sortedData.map(e => ({
-        ...e,
-        fields: {
-          ...e.fields,
-          status: this.appointmentStatus(e.fields.is_cancelled !== undefined ? e.fields.is_cancelled : undefined, e.fields.appointment_date)
-        }
-      }))
-    },
-    // Newly added helper function - processes withOutFilterAppointments array
-    processAllAppointmentData() {
-      this.withOutFilterAppointments = this.processAppointmentData(this.withOutFilterAppointments)
-    },
     getContactName(contactId: string) {
-      const contact = this.contacts.find(c => c.id === contactId)
+      const contact = this.contacts.find((c: Contact) => c.id === contactId)
       if (!contact) return ''
       return `${contact.fields.contact_name} ${contact.fields.contact_surname}`
     },
@@ -700,89 +699,20 @@ export default {
         }
       })
     },
-    async getAgents() {
-      this.isLoading = true
-      try {
-        const res = await apiService.get<{ records: Agent[] }>('/agents')
-        if(res.status === 200){
-          this.agents = res.data.records
-        }
-      } catch (error) {
-        console.error('Error fetching agents:', error)
-      } finally {
-        this.isLoading = false
-      }
+    async fetchAgents() {
+      await this.$store.dispatch('agents/fetchAgents')
     },
-    async getContacts() {
-      this.isLoading = true
-      try {
-        let allRecords: Contact[] = []
-        let offset: string | undefined
-        
-        do {
-          const res: { 
-            status: number;
-            data: { 
-              records: Contact[]; 
-              offset?: string;
-            };
-          } = await apiService.get<{ records: Contact[], offset?: string }>('/contacts', {
-            params: offset !== undefined ? { offset } : {}
-          })
-
-          if (res.status === 200) {
-            allRecords = [...allRecords, ...res.data.records]
-            offset = res.data.offset
-          } else {
-            break
-          }
-        } while (offset !== undefined)
-
-        this.contacts = allRecords
-      } catch (error) {
-        console.error('Error fetching contacts:', error)
-      } finally {
-        this.isLoading = false
-      }
+    async fetchContacts() {
+      await this.$store.dispatch('contacts/fetchContacts')
     },
-    async getAllAppointments() {
-      this.isLoading = true
-      try {
-        let allRecords: Appointment[] = []
-        let offset: string | undefined
-        
-        do {
-          const res: { 
-            status: number;
-            data: { 
-              records: Appointment[]; 
-              offset?: string;
-            };
-          } = await apiService.get<{ records: Appointment[], offset?: string }>('/appointments', {
-            params: offset !== undefined ? { offset } : {}
-          })
-
-          if (res.status === 200) {
-            allRecords = [...allRecords, ...res.data.records]
-            offset = res.data.offset
-          } else {
-            break
-          }
-        } while (offset !== undefined)
-
-        this.withOutFilterAppointments = allRecords
-        this.processAllAppointmentData()
-      } catch (error) {
-        console.error('Error fetching appointments:', error)
-      } finally {
-        this.isLoading = false
-      }
+    async fetchAppointments() {
+      await this.$store.dispatch('appointments/fetchAppointments')
     },
     findAgent(agentId: string): Agent | undefined {
-      return this.agents.find(agent => agent.id === agentId)
+      return this.$store.getters['agents/getAgentById'](agentId)
     },
     findContact(contactId: string): Contact | undefined {
-      return this.contacts.find(contact => contact.id === contactId)
+      return this.$store.getters['contacts/getContactById'](contactId)
     },
     getContactField(contactId: string, field: 'contact_name' | 'contact_surname' | 'contact_email' | 'contact_phone'): string {
       const contact = this.findContact(contactId)
@@ -802,15 +732,24 @@ export default {
       
       return 'Completed'
     },
-    filterAppointments() {
-      // Now only resetting page number, filtering is done by computed property
+    async filterAppointments() {
+      // Show loading indicator
+      this.isFiltering = true
+      
+      // Reset page number
       this.currentPage = 1
+      
+      // Add a small delay to show the loading indicator
+      await new Promise(resolve => setTimeout(resolve, 300))
+      
+      // Hide loading indicator
+      this.isFiltering = false
     }
   },
   async created() {
-    await this.getAgents()
-    await this.getContacts()
-    await this.getAllAppointments()
+    await this.fetchAgents()
+    await this.fetchContacts()
+    await this.fetchAppointments()
     
     // Animation for short delay
     setTimeout(() => {

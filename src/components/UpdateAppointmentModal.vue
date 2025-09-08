@@ -197,21 +197,6 @@ export default {
       type: Boolean,
       default: false
     },
-    agents: {
-      type: Array,
-      required: true,
-      default: () => []
-    },
-    contacts: {
-      type: Array,
-      required: true,
-      default: () => []
-    },
-    appointments: {
-      type: Array,
-      required: true,
-      default: () => []
-    },
     selectedAppointment: {
       type: Object,
       required: true
@@ -227,6 +212,15 @@ export default {
     }
   },
   computed: {
+    agents() {
+      return this.$store.state.agents.agents
+    },
+    contacts() {
+      return this.$store.state.contacts.contacts
+    },
+    appointments() {
+      return this.$store.state.appointments.appointments
+    },
     availableContacts() {
       if (!this.searchContactQuery) return []
       

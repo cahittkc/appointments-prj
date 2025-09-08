@@ -6,6 +6,7 @@ import '@vuepic/vue-datepicker/dist/main.css'
 import BaseModal from './components/BaseModal.vue'
 import Toast from 'vue-toastification'
 import 'vue-toastification/dist/index.css'
+import store from './store'
 
 const app = createApp(App)
 
@@ -24,6 +25,7 @@ const toastOptions = {
   rtl: false
 }
 
+app.use(store)
 app.use(Toast, toastOptions)
 app.component('VueDatePicker', VueDatePicker)
 app.component('BaseModal', BaseModal)

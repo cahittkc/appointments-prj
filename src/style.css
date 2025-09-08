@@ -1,1 +1,13 @@
 @import "tailwindcss";
+
+/* Prevent zoom on mobile inputs */
+input, select, textarea {
+  font-size: 13px;
+  touch-action: manipulation;
+}
+
+@media screen and (max-width: 768px) {
+  input, select, textarea {
+    font-size: 13px !important;
+  }
+}
