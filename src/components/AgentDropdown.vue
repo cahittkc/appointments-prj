@@ -113,8 +113,8 @@ const updateDropdownPosition = async () => {
   const rect = inputArea.getBoundingClientRect()
   
   dropdownStyle.value = {
-    top: `${rect.bottom + window.scrollY + 4}px`,
-    left: `${rect.left + window.scrollX}px`,
+    top: `${rect.bottom + 4}px`,
+    left: `${rect.left}px`,
     width: `${rect.width}px`
   }
 }

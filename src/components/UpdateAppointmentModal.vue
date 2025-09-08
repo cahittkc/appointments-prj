@@ -92,7 +92,7 @@
         />
 
         <div v-if="!addContactModalShow" class="modal relative">
-          <VueDatePicker :teleport="true" auto-apply :clearable="false" :min-date="new Date()"  format="dd/MM/yyyy HH:mm" v-model="selectedAppointment.appointment_date" class="w-[240px] text-xs before:content-['Appointment_Date'] before:absolute before:top-0.5 before:left-3 before:text-[11px] before:z-10  before:text-gray-500" name="" id="" />
+          <VueDatePicker :teleport="true" auto-apply :clearable="false" :min-date="new Date()" :min-time="new Date()" type="datetime" format="dd/MM/yyyy HH:mm" v-model="selectedAppointment.appointment_date" class="w-[240px] text-xs before:content-['Appointment_Date'] before:absolute before:top-0.5 before:left-3 before:text-[11px] before:z-10  before:text-gray-500" name="" id="" />
         </div>
 
         <div v-if="!addContactModalShow" class="flex items-center h-[42px] bg-white border border-gray-300 rounded-sm w-full relative">
