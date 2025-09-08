@@ -139,7 +139,7 @@
 
       <!-- Section new appoinment -->
       <!-- Desktop Header -->
-      <div class="hidden lg:flex items-center justify-between pt-8 px-3">
+      <div class="hidden lg:flex items-center justify-between py-6 px-3 border-b border-b-gray-200">
         <span class="text-sm text-gray-600">{{ appointments.length }} Appointments found. </span>
         <div v-if="newAppointmentIds.length > 0" class="flex items-center gap-x-2 text-sm text-green-600 animate-pulse">
           <CheckCircle class="w-5 h-5" />

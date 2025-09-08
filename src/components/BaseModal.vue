@@ -21,15 +21,15 @@
       </div>
 
       <!-- Mobile Layout -->
-      <div class="sm:hidden fixed inset-0 flex items-start justify-center p-2 top-1/2 -translate-y-1/2">
+      <div class="sm:hidden fixed inset-0 flex items-start justify-center p-2 top-[5%]">
         <div class="fixed inset-0 bg-gray-50/50 transition-opacity" aria-hidden="true"></div>
         <div class="relative bg-[#f4fafa] rounded-lg shadow-xl w-full max-h-[90vh] flex flex-col">
           <div class="px-2 pt-6 flex-shrink-0">
-            <h3 class="text-lg font-semibold leading-6 text-gray-900 text-center  flex items-center justify-center" id="modal-title">
+            <h3 class="text-lg font-semibold leading-6 text-gray-900 text-center pb-2 flex items-center justify-center" id="modal-title">
               <slot name="title"></slot>
             </h3>
           </div>
-          <div class="flex-1 overflow-y-auto px-2">
+          <div class="flex-1 overflow-y-auto px-2 ">
             <slot name="content"></slot>
           </div>
           <div class="px-4 py-4 rounded-b-lg">
