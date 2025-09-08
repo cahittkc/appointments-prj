@@ -87,7 +87,7 @@
         <div class="mb-4">
           <div class="grid grid-cols-2 gap-3">
             <div class="flex items-center group w-full relative">
-              <input v-model="searchText" type="text" placeholder="Search appointments..." class="w-full pl-4 pr-12 py-3 h-[48px] bg-white border border-gray-300 rounded-lg text-xs focus:outline-none text-sm" />
+              <input v-model="searchText" type="text" placeholder="Search appointments..." class="w-full pl-4 pr-12 py-3 h-[48px] bg-white border border-gray-300 rounded-lg text-xs focus:outline-none" />
               <Search class="absolute right-3 text-gray-500 w-4 h-4 z-10" />
             </div>
             <div>
