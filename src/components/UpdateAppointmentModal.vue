@@ -1,5 +1,6 @@
 <template>
   <BaseModal :isOpen="isOpen" @close="$emit('close')">
+    
     <template #title>
       <div class="flex items-center gap-x-1.5">
         <CalendarPlus2 class="w-5 h-5" />
@@ -8,6 +9,12 @@
     </template>
 
     <template #content>
+      <!-- Modal Loading Overlay -->
+      <div v-if="updateIsLoading" class="absolute inset-0 bg-gray-50/50  bg-opacity-75 flex items-center justify-center z-[100] rounded-lg cursor-not-allowed">
+        <div class="flex flex-col items-center space-y-2">
+          <Loader2 class="w-8 h-8 animate-spin text-pink-500" />
+        </div>
+      </div>
       <div class="flex flex-col gap-y-2.5">
         <div v-if="!addContactModalShow && selectedAppointment.contact_id.length === 0" @click="addContactModalShow = true" class="flex cursor-pointer bg-white gap-y-2 flex-1 items-center justify-center border border-dashed border-gray-300 rounded-lg p-4 min-h-[98px] relative">
           <UserPlus2 class="w-5 h-5 text-gray-500" />            
@@ -157,6 +164,8 @@
         </button>
       </div>
     </template>
+    
+    
   </BaseModal>
 </template>
 

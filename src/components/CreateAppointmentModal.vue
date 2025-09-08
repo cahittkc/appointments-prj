@@ -8,6 +8,12 @@
     </template>
 
     <template #content>
+      <!-- Modal Loading Overlay -->
+      <div v-if="createIsLoading" class="absolute inset-0 bg-gray-50/50  bg-opacity-75 flex items-center justify-center z-[100] rounded-lg cursor-not-allowed">
+        <div class="flex flex-col items-center space-y-2">
+          <Loader2 class="w-8 h-8 animate-spin text-pink-500" />
+        </div>
+      </div>
         <div class="flex flex-col gap-y-6 mt-6">
           <div class="relative">
             <div v-if="createAppointmentForm.contact_id.length === 0" class="flex flex-col gap-y-1">
@@ -67,7 +73,7 @@
             @toggle-agent="toggleAgent"
           />
 
-          <div class="modal relative">
+          <div class="modal">
             <VueDatePicker :teleport="true" auto-apply :clearable="false" :min-date="new Date()"  format="dd/MM/yyyy HH:mm" v-model="createAppointmentForm.appointment_date" class="w-[240px] text-xs before:content-['Appointment_Date'] before:absolute before:top-0.5 before:left-3 before:text-[11px] before:z-10  before:text-gray-500" name="" id="" />
           </div>
         </div>
@@ -81,6 +87,8 @@
         </button>
       </div>
     </template>
+    
+    
   </BaseModal>
 </template>
 
